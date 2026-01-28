@@ -1,0 +1,29 @@
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.idea/
+.vscode/
+
+# Virtual environments
+.venv/
+venv/
+
+# Compiled Python files
+__pycache__/
+*.pyc
+
+# Python packaging
+*.egg-info/
+dist/
+build/
+
+# Logs and temporary files
+logs/
+*.log
+*.tmp
+
+# Environment variables and sensitive information
+.env

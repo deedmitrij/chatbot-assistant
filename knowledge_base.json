@@ -1,0 +1,21 @@
+{
+    "categories": [
+        { "id": "rooms", "label": "🛏️ Rooms & Rates" },
+        { "id": "amenities", "label": "🏊 Amenities" },
+        { "id": "policy", "label": "📄 Policies" }
+    ],
+    "faq": {
+        "rooms": [
+            { "q": "What types of rooms do you have?", "a": "We offer Deluxe Ocean View, Family Suites, and Penthouse Villas." },
+            { "q": "Do you have seasonal discounts?", "a": "Yes! Currently, we have a 20% discount for stays longer than 5 nights." }
+        ],
+        "amenities": [
+            { "q": "Is the pool heated?", "a": "Our infinity pool is heated to a comfortable 28°C year-round." },
+            { "q": "Do you have a gym?", "a": "Yes, our fitness center is open 24/7 for all guests." }
+        ],
+        "policy": [
+            { "q": "What is the check-in time?", "a": "Check-in is at 3:00 PM and check-out is at 11:00 AM." },
+            { "q": "Is parking free?", "a": "We provide one complimentary parking spot per room." }
+        ]
+    }
+}

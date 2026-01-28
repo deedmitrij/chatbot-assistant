@@ -1,0 +1,9 @@
+fastapi
+flask
+uvicorn
+python-dotenv
+faiss-cpu
+numpy
+torch
+transformers
+huggingface-hub

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Sands Resort | Luxury Stay</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="hero">
+        <nav>
+            <div class="logo">AZURE SANDS</div>
+            <ul>
+                <li><a href="#">Rooms</a></li>
+                <li><a href="#">Dining</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="hero-content">
+            <h1>Escape to Paradise</h1>
+            <p>Experience luxury starting at $199/night</p>
+            <button class="btn-primary">Book Your Stay</button>
+        </div>
+    </header>
+
+    <div id="chat-widget">
+        <button id="chat-button"><i class="fas fa-comments"></i></button>
+
+        <div id="chat-window" class="hidden">
+            <div class="chat-header">
+                <h3>Hotel Assistant</h3>
+                <button id="minimize-chat"><i class="fas fa-minus"></i></button>
+            </div>
+
+            <button id="operator-btn-sticky" class="full-width-action-btn op-color">
+                <i class="fas fa-headset"></i> Talk to Operator
+            </button>
+
+            <div id="chat-messages">
+                <div class="message bot-message">Hello! How can I help you today?</div>
+                <div id="faq-container" class="faq-grid"></div>
+            </div>
+
+            <button id="end-session-btn" class="full-width-action-btn end-color">
+                End Chat & Clear History
+            </button>
+
+            <div class="chat-footer">
+                <input type="text" id="user-input" placeholder="Type your question...">
+                <button id="send-btn"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
