@@ -1,6 +1,6 @@
 # 🗎 AI-Powered Hotel Support Assistant
 
-This is a **RAG chatbot** designed for automated hotel guest support. It utilizes an **Orchestrator Pattern** to coordinate between vector search and LLM, featuring a **Human-in-the-Loop** mechanism to handle low-confidence queries.
+This is a **RAG chatbot** designed for automated hotel guest support. It utilizes an **Orchestrator Pattern** to coordinate between **Vector DB search** and **LLM**, featuring a **Human-in-the-Loop** mechanism to handle low-confidence queries.
 
 <img src="https://github.com/user-attachments/assets/b0c431dd-c237-41b9-a1fd-80936c6012e9" alt="Chatbot assistant screenshot" width="300">
 
@@ -30,8 +30,6 @@ This is a **RAG chatbot** designed for automated hotel guest support. It utilize
 ## 🧱 Architecture Overview
 This application is built as an **AI-powered RAG (Retrieval-Augmented Generation) system** using a centralized Orchestrator to manage data flow and logic.
 
-
-
 ### 1️⃣ Retrieval Layer
 1. **Knowledge Base**: Uses a structured `knowledge_base.json` as the primary source of resort information.
 2. **Vector Storage**: Text chunks are embedded and stored in a **FAISS** index for high-speed semantic similarity search.
@@ -51,7 +49,7 @@ This application is built as an **AI-powered RAG (Retrieval-Augmented Generation
 
 ### 4️⃣ Human-in-the-Loop (HITL)
 1. **Threshold Logic**: If the vector search returns a confidence score below the threshold, the system triggers a "pending approval" state.
-2. **Operator Alerts**: Designed to integrate with Telegram (Phase 4) to allow hotel staff to review AI suggestions and intervene in real-time.
+2. **Operator Alerts**: Designed to integrate with Telegram to allow hotel staff to review AI suggestions and intervene in real-time.
 
 ---
 
@@ -109,6 +107,23 @@ The chatbot will start and be accessible at **http://localhost:5000**.
 ---
 
 ## 🔗 API Setup
+
+### 🤖 Telegram Bot
+To receive "Low Confidence" alerts and respond to guests from your phone:
+
+1. **Create a Bot**: 
+   - Message [@BotFather](https://t.me/botfather) on Telegram.
+   - Use the `/newbot` command and follow the instructions.
+   - Copy the **API Token** and add it to your `.env` file as `TG_BOT_TOKEN`.
+2. **Get your Chat ID**: 
+   - Message [@userinfobot](https://t.me/userinfobot).
+   - Copy your unique **ID** (a string of numbers) and add it to your `.env` file as `TG_ADMIN_ID`.
+3. **Initialize the Bot**: 
+   - Open your new bot's chat and press **Start**. The bot cannot message you until you've interacted with it.
+4. **Setup Webhook (Local Dev)**:
+   - Use a tool like **ngrok** to create a public URL for your local server: `ngrok http 5000`.
+   - Register the URL with Telegram:
+     `https://api.telegram.org/bot<YOUR_TOKEN>/setWebhook?url=<YOUR_NGROK_URL>/webhook/telegram`
 
 ### 🤖 Hugging Face Inference API
 To get access to Hugging Face models:
