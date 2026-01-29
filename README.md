@@ -65,8 +65,10 @@ This application is built as an **AI-powered RAG (Retrieval-Augmented Generation
 
 ## 📋 Prerequisites
 - Python 3.10+
-- Hugging Face account with an **Access Token** (Write/Inference permissions)
-
+- **Hugging Face account** with an **Access Token** (Write/Inference permissions)
+* **Telegram Account**: To create a bot and receive operator alerts via the Telegram Bot API.
+* **ngrok** (or similar): Required for local development to expose your webhook to Telegram's servers.
+  
 ---
 
 ## 🛠️ Setup Instructions
