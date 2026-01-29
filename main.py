@@ -1,6 +1,6 @@
 import json
-from flask import Flask, send_from_directory, jsonify, request
-from backend.manager import ChatManager
+from flask import Flask, send_from_directory, jsonify, request, current_app
+from backend.chat_manager import ChatManager
 from backend.api import routes as chat_routes
 
 
@@ -16,14 +16,14 @@ def bootstrap_manager():
             for item in questions:
                 texts.append(f"Question: {item['q']} Answer: {item['a']}")
 
-        # 1. Create the manager instance with the token
-        new_manager = ChatManager()
+        # 1. Create the manager instance
+        manager = ChatManager()
 
         # 2. Build the FAISS index
-        new_manager.init_knowledge(texts)
+        manager.init_knowledge(texts)
 
-        # 3. Inject it into the routes module so the API can use it
-        chat_routes.manager = new_manager
+        # 3. Attach the manager to the app object
+        app.manager = manager
         print("✅ Backend Manager initialized and knowledge base indexed.")
 
 
@@ -49,6 +49,35 @@ def get_questions(category_id):
 @app.route('/<path:path>')
 def static_proxy(path):
     return send_from_directory(app.static_folder, path)
+
+
+@app.route('/webhook/telegram', methods=['POST'])
+def telegram_webhook():
+    manager = current_app.manager
+    data = request.json
+
+    # 1. Handle "Approve" Button Click
+    if "callback_query" in data:
+        callback = data["callback_query"]
+        req_id = callback["data"].replace("approve_", "")
+
+        # Get the original AI suggestion from our state
+        request_info = manager.pending_requests.get(req_id)
+        if request_info:
+            manager.fulfill_request(req_id, request_info["suggestion"])
+
+    # 2. Handle manual Reply
+    if "message" in data and "reply_to_message" in data["message"]:
+        reply_text = data["message"]["text"]
+        original_msg_id = data["message"]["reply_to_message"]["message_id"]
+        success = manager.fulfill_by_msg_id(original_msg_id, reply_text)
+
+        if success:
+            print(f"✅ Reply mapped to user request via Msg ID {original_msg_id}")
+        else:
+            print(f"⚠️ Unknown message ID {original_msg_id}")
+
+    return {"status": "ok"}
 
 
 if __name__ == '__main__':

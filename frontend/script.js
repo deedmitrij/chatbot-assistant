@@ -7,23 +7,22 @@ const chatMessages = document.getElementById('chat-messages');
 const endSessionBtn = document.getElementById('end-session-btn');
 const opStickyBtn = document.getElementById('operator-btn-sticky');
 
-// Toggle/Minimize
+// 1. Toggle/Minimize
 chatButton.addEventListener('click', () => chatWindow.classList.toggle('hidden'));
 minimizeBtn.addEventListener('click', () => chatWindow.classList.add('hidden'));
 
-// End Session Logic
+// 2. End Session Logic
 endSessionBtn.addEventListener('click', () => {
     if(confirm("Are you sure you want to end this session and clear history?")) {
-        // Reset message area to initial state
         chatMessages.innerHTML = `
             <div class="message bot-message">Session reset. How can I help you today?</div>
             <div id="faq-container" class="faq-grid"></div>
         `;
-        showCategories(); // Reload the buttons
+        showCategories();
     }
 });
 
-// Operator Button
+// 3. Operator Button
 opStickyBtn.addEventListener('click', contactOperator);
 
 async function contactOperator() {
@@ -39,6 +38,7 @@ async function contactOperator() {
     }
 }
 
+// 4. FAQ Logic
 async function showCategories() {
     const faqContainer = document.getElementById('faq-container');
     if (!faqContainer) return;
@@ -89,6 +89,7 @@ async function showQuestions(catId) {
     }
 }
 
+// 5. Helper to add messages
 function addMessage(text, sender) {
     const msgDiv = document.createElement('div');
     msgDiv.classList.add('message', `${sender}-message`);
@@ -97,15 +98,16 @@ function addMessage(text, sender) {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
+// 6. Main Send Logic (Unified)
 async function handleSend() {
     const text = userInput.value.trim();
     if (!text) return;
 
-    // 1. Display user message
+    // Display user message
     addMessage(text, 'user');
     userInput.value = '';
 
-    // 2. Add a temporary "typing..." indicator
+    // Add typing indicator
     const typingId = 'typing-' + Date.now();
     const typingDiv = document.createElement('div');
     typingDiv.id = typingId;
@@ -115,7 +117,7 @@ async function handleSend() {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
     try {
-        // 3. Send to our new backend API
+        // Send to backend
         const response = await fetch('/api/process', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -124,25 +126,51 @@ async function handleSend() {
 
         const data = await response.json();
 
-        // 4. Remove typing indicator
-        document.getElementById(typingId).remove();
+        // Remove typing indicator
+        const typingElem = document.getElementById(typingId);
+        if (typingElem) typingElem.remove();
 
-        // 5. Handle the response based on status
+        // Handle Logic
         if (data.status === 'direct') {
+            // High confidence answer
             addMessage(data.answer, 'bot');
-        } else if (data.status === 'pending_approval') {
-            // Show the "checking..." message to user
-            addMessage(data.answer, 'bot');
-            // Log suggestion for debugging (in Phase 4 this goes to Telegram)
-            console.log("Suggestion awaiting approval:", data.suggested);
+        } else if (data.status === 'pending') {
+            // Low confidence -> Waiting for Telegram approval
+            // 1. Show the "Wait" message
+            addMessage("Let me double check that with our front desk staff...", 'bot');
+
+            // 2. Start polling for the real answer
+            pollForAnswer(data.request_id);
         }
+
     } catch (err) {
-        document.getElementById(typingId).remove();
+        const typingElem = document.getElementById(typingId);
+        if (typingElem) typingElem.remove();
         addMessage("Sorry, I'm having trouble connecting to the server.", 'bot');
         console.error("API Error:", err);
     }
 }
 
+// 7. Polling Logic
+function pollForAnswer(requestId) {
+    // Check every 2 seconds
+    const interval = setInterval(async () => {
+        try {
+            const res = await fetch(`/api/check_status/${requestId}`);
+            const data = await res.json();
+
+            if (data.status === "completed") {
+                clearInterval(interval); // Stop checking
+                addMessage(data.answer, 'bot'); // Show the Operator's answer
+            }
+        } catch (e) {
+            console.error("Polling error", e);
+            clearInterval(interval); // Stop on error to prevent infinite loop
+        }
+    }, 2000);
+}
+
+// Event Listeners
 sendBtn.addEventListener('click', handleSend);
 userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSend(); });
 

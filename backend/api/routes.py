@@ -1,14 +1,12 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
+
 
 chat_api = Blueprint('chat_api', __name__)
-
-# We declare manager as None; main.py will assign the initialized instance to this variable
-manager = None
 
 
 @chat_api.route('/process', methods=['POST'])
 def handle_chat():
-    global manager
+    manager = getattr(current_app, 'manager', None)
     data = request.json
     user_msg = data.get('message')
 
@@ -20,3 +18,10 @@ def handle_chat():
 
     result = manager.process_message(user_msg)
     return jsonify(result)
+
+
+@chat_api.route('/check_status/<req_id>', methods=['GET'])
+def check_status(req_id):
+    manager = current_app.manager
+    status_info = manager.check_status(req_id)
+    return jsonify(status_info)
