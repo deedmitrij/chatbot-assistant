@@ -1,59 +1,64 @@
-import json
-from flask import Flask, send_from_directory, jsonify, request, current_app
-from backend.chat_manager import ChatManager
+from flask import Flask, send_from_directory, jsonify, request
 from backend.api import routes as chat_routes
+from backend.managers.chat_manager import ChatManager
+from backend.managers.knowledge_manager import KnowledgeManager
+from backend.utils.watcher import start_faq_watcher
+from config import FAQ_PATH, OPERATOR_KNOWLEDGE_PATH
 
 
 app = Flask(__name__, static_folder='frontend', template_folder='frontend')
 app.register_blueprint(chat_routes.chat_api, url_prefix='/api')
 
 
-def bootstrap_manager():
-    with open('knowledge_base.json', 'r', encoding='utf-8') as f:
-        data = json.load(f)
-        texts = []
-        for cat_id, questions in data['faq'].items():
-            for item in questions:
-                texts.append(f"Question: {item['q']} Answer: {item['a']}")
+def bootstrap_manager() -> None:
+    """
+    Initializes services, managers, and starts background file monitoring.
+    """
+    # 1. Create managers
+    knowledge_manager = KnowledgeManager()
+    chat_manager = ChatManager(knowledge_manager=knowledge_manager)
 
-        # 1. Create the manager instance
-        manager = ChatManager()
+    # 2. Initial sync
+    knowledge_manager.load_faq_data()
+    knowledge_manager.load_operator_knowledge()
 
-        # 2. Build the FAISS index
-        manager.init_knowledge(texts)
+    # 3. Start FAQ watcher
+    start_faq_watcher(FAQ_PATH, knowledge_manager.load_faq_data)
 
-        # 3. Attach the manager to the app object
-        app.manager = manager
-        print("✅ Backend Manager initialized and knowledge base indexed.")
+    # 4. Attach managers to the app object
+    app.chat_manager = chat_manager
+    app.knowledge_manager = knowledge_manager
+
+    print("✅ Backend Manager initialized and knowledge base indexed.")
 
 
 @app.route('/')
 def index():
+    """Serves the main frontend page."""
     return send_from_directory(app.static_folder, 'index.html')
 
 
 @app.route('/api/faq/categories')
 def get_categories():
-    # ADD encoding='utf-8' HERE
-    with open('knowledge_base.json', 'r', encoding='utf-8') as f:
-        return jsonify(json.load(f)['categories'])
+    """Returns a list of FAQ categories."""
+    return jsonify(app.knowledge_manager.get_categories())
 
 
 @app.route('/api/faq/questions/<category_id>')
 def get_questions(category_id):
-    # ADD encoding='utf-8' HERE
-    with open('knowledge_base.json', 'r', encoding='utf-8') as f:
-        return jsonify(json.load(f)['faq'].get(category_id, []))
+    """Returns questions for a specific category."""
+    return jsonify(app.knowledge_manager.get_questions_by_category(category_id))
 
 
 @app.route('/<path:path>')
 def static_proxy(path):
+    """Proxies static file requests."""
     return send_from_directory(app.static_folder, path)
 
 
 @app.route('/webhook/telegram', methods=['POST'])
 def telegram_webhook():
-    manager = current_app.manager
+    chat_manager = app.chat_manager
     data = request.json
 
     # 1. Handle "Approve" Button Click
@@ -62,15 +67,15 @@ def telegram_webhook():
         req_id = callback["data"].replace("approve_", "")
 
         # Get the original AI suggestion from our state
-        request_info = manager.pending_requests.get(req_id)
+        request_info = chat_manager.pending_requests.get(req_id)
         if request_info:
-            manager.fulfill_request(req_id, request_info["suggestion"])
+            chat_manager.fulfill_request(req_id, request_info["suggestion"])
 
     # 2. Handle manual Reply
     if "message" in data and "reply_to_message" in data["message"]:
         reply_text = data["message"]["text"]
         original_msg_id = data["message"]["reply_to_message"]["message_id"]
-        success = manager.fulfill_by_msg_id(original_msg_id, reply_text)
+        success = chat_manager.fulfill_by_msg_id(original_msg_id, reply_text)
 
         if success:
             print(f"✅ Reply mapped to user request via Msg ID {original_msg_id}")

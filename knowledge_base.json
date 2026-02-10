@@ -2,6 +2,7 @@
     "categories": [
         { "id": "rooms", "label": "🛏️ Rooms & Rates" },
         { "id": "amenities", "label": "🏊 Amenities" },
+        { "id": "dining", "label": "🍽️ Dining" },
         { "id": "policy", "label": "📄 Policies" }
     ],
     "faq": {
@@ -12,6 +13,11 @@
         "amenities": [
             { "q": "Is the pool heated?", "a": "Our infinity pool is heated to a comfortable 28°C year-round." },
             { "q": "Do you have a gym?", "a": "Yes, our fitness center is open 24/7 for all guests." }
+        ],
+        "dining": [
+            { "q": "What time is breakfast served?", "a": "Breakfast is served from 7:00 AM to 10:30 AM at the 'Sunrise' restaurant." },
+            { "q": "Do you have vegetarian options?", "a": "Yes, our menu includes a variety of vegan and vegetarian dishes." },
+            { "q": "Can I order room service at night?", "a": "Our room service is available 24/7 with a limited late-night menu." }
         ],
         "policy": [
             { "q": "What is the check-in time?", "a": "Check-in is at 3:00 PM and check-out is at 11:00 AM." },
