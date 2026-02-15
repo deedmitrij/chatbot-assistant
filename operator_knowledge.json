@@ -1,0 +1,27 @@
+[
+    {
+        "q": "Are you pet friendly?",
+        "a": "Yes, we allow to stay with pets in our hotel",
+        "created_at": "2026-02-05 12:08:05"
+    },
+    {
+        "q": "What animals type is allowed?",
+        "a": "We allow common pets like dogs and cats",
+        "created_at": "2026-02-05 18:38:15"
+    },
+    {
+        "q": "Can I come with my parrot?",
+        "a": "No, it is not possible, because we allow only common pets like dogs and cats",
+        "created_at": "2026-02-05 18:49:28"
+    },
+    {
+        "q": "Can I come with my guinea pig?",
+        "a": "No, it's not allowed to come with guinea pig. We allow to come only with small cats and dogs",
+        "created_at": "2026-02-05 19:38:53"
+    },
+    {
+        "q": "Ok, can I swim in your hotel somewhere?",
+        "a": "Yes, we have a swimming pool that is heated to a comfortable 28°C year-round",
+        "created_at": "2026-02-09 20:08:01"
+    }
+]

@@ -27,3 +27,9 @@ logs/
 
 # Environment variables and sensitive information
 .env
+
+# Chroma persistent storage
+chroma_db/
+
+# Evaluation outputs
+backend/evaluation/results/

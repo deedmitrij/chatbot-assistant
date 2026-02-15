@@ -1,0 +1,42 @@
+[
+  {
+    "question": "What types of rooms are available at your hotel?",
+    "ground_truth": "We offer Deluxe Ocean View, Family Suites, and Penthouse Villas."
+  },
+  {
+    "question": "When can I check in and when should I leave?",
+    "ground_truth": "Check-in is at 3:00 PM and check-out is at 11:00 AM."
+  },
+  {
+    "question": "Is the swimming pool suitable for winter?",
+    "ground_truth": "Yes, our infinity pool is heated to a comfortable 28°C year-round."
+  },
+  {
+    "question": "Can I bring my dog with me?",
+    "ground_truth": "Yes, we are pet friendly and allow common pets like dogs and cats."
+  },
+  {
+    "question": "I have a parrot, can it stay in the room with me?",
+    "ground_truth": "No, it is not possible. We allow only common pets like dogs and cats, but not parrots."
+  },
+  {
+    "question": "Is it okay if I bring my guinea pig?",
+    "ground_truth": "No, it's not allowed to come with a guinea pig. We allow only small cats and dogs."
+  },
+  {
+    "question": "Do I need to pay for parking?",
+    "ground_truth": "No, parking is free. We provide one complimentary parking spot per room."
+  },
+  {
+    "question": "I'm staying for a week, do you have any deals?",
+    "ground_truth": "Yes! Currently, we have a 20% discount for stays longer than 5 nights."
+  },
+  {
+    "question": "Where and at what time can I have breakfast?",
+    "ground_truth": "Breakfast is served from 7:00 AM to 10:30 AM at the 'Sunrise' restaurant."
+  },
+  {
+    "question": "I am a vegetarian, will I find anything to eat at your restaurant?",
+    "ground_truth": "Yes, our menu includes a variety of vegan and vegetarian dishes."
+  }
+]
