@@ -1,9 +1,11 @@
 import chromadb
+from config import PROJECT_ROOT
 
 
 class VectorDBService:
 
-    def __init__(self, storage_path="./chroma_db"):
+    def __init__(self):
+        storage_path = PROJECT_ROOT / "chroma_db"
         self.client = chromadb.PersistentClient(path=storage_path)
         self.collection = self.client.get_or_create_collection(name="hotel_knowledge")
 

@@ -1,9 +1,8 @@
 from flask import Flask, send_from_directory, jsonify, request
 from backend.api import routes as chat_routes
-from backend.managers.chat_manager import ChatManager
-from backend.managers.knowledge_manager import KnowledgeManager
+from backend.managers.factory import create_app_manager
 from backend.utils.watcher import start_faq_watcher
-from config import FAQ_PATH, OPERATOR_KNOWLEDGE_PATH
+from config import FAQ_PATH
 
 
 app = Flask(__name__, static_folder='frontend', template_folder='frontend')
@@ -14,20 +13,13 @@ def bootstrap_manager() -> None:
     """
     Initializes services, managers, and starts background file monitoring.
     """
-    # 1. Create managers
-    knowledge_manager = KnowledgeManager()
-    chat_manager = ChatManager(knowledge_manager=knowledge_manager)
-
-    # 2. Initial sync
-    knowledge_manager.load_faq_data()
-    knowledge_manager.load_operator_knowledge()
-
-    # 3. Start FAQ watcher
-    start_faq_watcher(FAQ_PATH, knowledge_manager.load_faq_data)
-
-    # 4. Attach managers to the app object
+    # 1. Create managers and attach to the app object
+    chat_manager = create_app_manager()
     app.chat_manager = chat_manager
-    app.knowledge_manager = knowledge_manager
+    app.knowledge_manager = chat_manager.knowledge_manager
+
+    # 2. Start FAQ watcher
+    start_faq_watcher(FAQ_PATH, chat_manager.knowledge_manager.load_faq_data)
 
     print("✅ Backend Manager initialized and knowledge base indexed.")
 
