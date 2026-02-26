@@ -1,7 +1,7 @@
 import uuid
 from typing import Dict, Any
 from backend.managers.knowledge_manager import KnowledgeManager
-from backend.services.llm_service import LLMService
+from backend.services.llm.llm_service import LLMService
 from backend.services.vector_db_service import VectorDBService
 from backend.services.telegram_service import TelegramService
 from config import VECTOR_SIMILARITY_THRESHOLD
@@ -26,10 +26,16 @@ class ChatManager:
         Analyzes the user query, searches context, and either returns an answer
         or initiates a human operator request.
         """
-        context, distance = self.knowledge_manager.get_relevant_context(user_query)
-        ai_answer, is_ai_confident = self.llm.get_answer(user_query, context)
+        vector_search_result = self.knowledge_manager.get_relevant_context(user_query)
 
-        if distance <= VECTOR_SIMILARITY_THRESHOLD and is_ai_confident:
+        context = vector_search_result['documents'][0]
+        nearest_distance = vector_search_result['distances'][0][0]
+
+        ai_response = self.llm.get_answer(user_query, context)
+        is_ai_confident = ai_response['confidence']
+        ai_answer = ai_response['answer']
+
+        if nearest_distance <= VECTOR_SIMILARITY_THRESHOLD and is_ai_confident:
             return {"status": "direct", "answer": ai_answer}
         else:
             # Create a unique ID for this specific interaction

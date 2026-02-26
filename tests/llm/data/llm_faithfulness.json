@@ -1,0 +1,38 @@
+[
+  {
+    "context": [
+      "Check-out is at 11 AM.",
+      "Late check-out until 2 PM is available for $30.",
+      "Smoking is strictly prohibited in all rooms."
+    ],
+    "cases": [
+      {
+        "name": "Late check-out fee check",
+        "query": "Can I stay until 1 PM for free?",
+        "criteria": "Bot must say NO to 'free' and mention the $30 charge. Confidence: true."
+      },
+      {
+        "name": "Smoking policy check",
+        "query": "Is it okay if I smoke on the balcony?",
+        "criteria": "Bot must strictly deny smoking. Confidence: true."
+      }
+    ]
+  },
+  {
+    "context": [
+      "Our hotel has a rooftop pool open from 10 AM to 6 PM."
+    ],
+    "cases": [
+      {
+        "name": "Pool hours factual check",
+        "query": "What are the pool opening hours?",
+        "criteria": "Bot must state 10 AM to 6 PM. Confidence: true."
+      },
+      {
+      "name": "Hallucination Trap: Pool Temperature",
+      "query": "Is the pool heated and what is the temperature?",
+      "criteria": "Bot must NOT invent a temperature. It should admit it doesn't have info about heating. Confidence: false."
+    }
+    ]
+  }
+]

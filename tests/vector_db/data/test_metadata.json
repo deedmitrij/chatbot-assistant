@@ -1,0 +1,32 @@
+[
+  {
+    "id": "metadata-precision",
+    "dataset": {
+      "documents": [
+        "Guest breakfast is served from 7:00 to 11:00 AM in the main hall.",
+        "Staff breakfast is served from 6:00 to 7:00 AM in the kitchen area."
+      ],
+      "ids": ["guest_br", "staff_br"],
+      "metadatas": [
+        {"role": "guest", "type": "food"},
+        {"role": "staff", "type": "food"}
+      ]
+    },
+    "cases": [
+      {
+        "name": "Filter for Guest Role",
+        "query": "when is breakfast served?",
+        "filter": {"role": "guest"},
+        "expected_id": "guest_br",
+        "max_distance": 0.6
+      },
+      {
+        "name": "Filter for Staff Role",
+        "query": "when is breakfast served?",
+        "filter": {"role": "staff"},
+        "expected_id": "staff_br",
+        "max_distance": 0.5
+      }
+    ]
+  }
+]

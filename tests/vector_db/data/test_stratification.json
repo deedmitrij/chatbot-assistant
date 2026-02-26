@@ -1,0 +1,46 @@
+[
+  {
+    "id": "out-of-scope-stratification",
+    "dataset": {
+      "documents": [
+        "The hotel gym is open from 6 AM to 11 PM.",
+        "Free Wi-Fi is available in all rooms. Password: hotel_guest_2024",
+        "Check-out time is 11:00 AM. Late check-out is subject to availability.",
+        "Our reception is open 24/7 to assist or help you with any issues or requests.",
+        "The hotel has 24-hour security cameras and staff on duty for your safety."
+      ],
+      "ids": ["gym", "wifi", "checkout", "reception_help", "security"],
+      "metadatas": [{"cat": "facility"}, {"cat": "tech"}, {"cat": "policy"},  {"cat": "service"}, {"cat": "safety"}]
+    },
+    "cases": [
+      {
+        "name": "Gray Zone: Vague Help",
+        "query": "I need some assistance with my stay",
+        "expected_action": "HITL",
+        "min_dist": 0.6,
+        "max_dist": 0.75
+      },
+      {
+        "name": "Gray Zone: Ambiguous Safety",
+        "query": "Is it safe here?",
+        "expected_action": "HITL",
+        "min_dist": 0.6,
+        "max_dist": 0.75
+      },
+      {
+        "name": "Garbage: Pizza Recipe",
+        "query": "How to make a pepperoni pizza?",
+        "expected_action": "REJECT",
+        "min_dist": 0.76,
+        "max_dist": 1.0
+      },
+      {
+        "name": "Garbage: Random Tech",
+        "query": "How to install Linux on a toaster?",
+        "expected_action": "REJECT",
+        "min_dist": 0.76,
+        "max_dist": 1.0
+      }
+    ]
+  }
+]

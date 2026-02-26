@@ -1,0 +1,48 @@
+[
+  {
+    "id": "pool-recall-test",
+    "dataset": {
+      "documents": [
+        "The outdoor infinity pool is open from 8 AM to 10 PM.",
+        "Children under 12 must be supervised in any pool area.",
+        "Pool towels are available at the spa reception.",
+        "The indoor heated pool is open 24/7 for all guests.",
+        "The sauna is located next to the indoor pool."
+      ],
+      "ids": ["pool_outdoor", "pool_child", "pool_towels", "pool_indoor", "pool_sauna"],
+      "metadatas": [
+        {"type": "pool"}, {"type": "safety"}, {"type": "service"}, {"type": "pool"}, {"type": "amenity"}
+      ]
+    },
+    "cases": [
+      {
+        "name": "Recall Check: Indoor Pool",
+        "query": "Is there a pool I can use at night?",
+        "expected_id": "pool_indoor",
+        "n_results": 2,
+        "max_distance": 1.0
+      },
+      {
+        "name": "Recall Check: Night Swimming (24/7)",
+        "query": "I want to swim at 3 AM. Is it possible?",
+        "expected_id": "pool_indoor",
+        "n_results": 2,
+        "max_distance": 1.45
+      },
+      {
+        "name": "Recall Check: Synonym for Towels",
+        "query": "Do you provide linens for the beach or pool?",
+        "expected_id": "pool_towels",
+        "n_results": 2,
+        "max_distance": 1.1
+      },
+      {
+        "name": "Recall Check: Safety Overlap",
+        "query": "Is the sauna safe for kids?",
+        "expected_id": "pool_sauna",
+        "n_results": 2,
+        "max_distance": 1.1
+      }
+    ]
+  }
+]

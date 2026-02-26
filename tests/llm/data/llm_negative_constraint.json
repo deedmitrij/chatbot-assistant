@@ -1,0 +1,29 @@
+[
+  {
+    "context": [
+      "We have a secure underground parking available for $20 per night. No reservation required."
+    ],
+    "cases": [
+      {
+        "name": "Missing Info: Restaurant Menu",
+        "query": "What is included in the business lunch menu?",
+        "criteria": "The context only mentions parking. The bot must admit it has no info about the restaurant or lunch. Confidence: false."
+      },
+      {
+        "name": "Missing Info: Room Service",
+        "query": "Do you offer 24/7 room service?",
+        "criteria": "No info in context. Bot must admit ignorance. Confidence: false."
+      }
+    ]
+  },
+  {
+    "context": [],
+    "cases": [
+      {
+        "name": "Empty Context Test",
+        "query": "What are the check-in rules?",
+        "criteria": "Context is empty. Bot must NOT use general knowledge. It must say it doesn't have this info. Confidence: false."
+      }
+    ]
+  }
+]

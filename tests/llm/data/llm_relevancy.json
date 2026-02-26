@@ -1,0 +1,34 @@
+[
+  {
+    "context": [
+      "Breakfast is served from 7:00 to 11:00 AM in the 'Green Garden' restaurant.",
+      "We offer gluten-free and vegan options upon request.",
+      "The gym is located on the 2nd floor and is open 24/7."
+    ],
+    "cases": [
+      {
+        "name": "Multi-intent: Breakfast details",
+        "query": "Where is breakfast served and do you have vegan food?",
+        "criteria": "The answer must include BOTH the restaurant name ('Green Garden') and confirm the availability of vegan options."
+      },
+      {
+        "name": "Multi-intent: Gym location and price",
+        "query": "Where is the gym and how much does it cost?",
+        "criteria": "The answer must specify the 2nd floor AND state that it is free (or mention no cost is listed, based on 'open 24/7' for guests)."
+      }
+    ]
+  },
+  {
+    "context": [
+      "Our hotel provides a shuttle to the airport every hour for $15.",
+      "Taxi service can be booked at the reception and costs around $40."
+    ],
+    "cases": [
+      {
+        "name": "Comparison query",
+        "query": "What is the cheapest way to get to the airport?",
+        "criteria": "The bot must compare the prices ($15 vs $40) and explicitly recommend the shuttle as the cheapest option."
+      }
+    ]
+  }
+]
