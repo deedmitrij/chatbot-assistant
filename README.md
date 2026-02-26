@@ -12,7 +12,7 @@ This is a **RAG chatbot** designed for automated hotel guest support. It utilize
    - [Orchestration Layer](#2️⃣-orchestration-layer)
    - [LLM Layer](#3️⃣-llm-layer)
    - [Human-in-the-Loop (HITL)](#4️⃣-human-in-the-loop-hitl)
-2. [Quality Assurance & Testing](#%EF%B8%8F-quality-assurance--testing)
+2. [Quality Assurance & Testing](#-quality-assurance--testing)
 3. [RAGAS Evaluation](#-ragas-evaluation)
 4. [Tech Stack](#-tech-stack)
 5. [Prerequisites](#-prerequisites)
