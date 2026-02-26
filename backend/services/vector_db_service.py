@@ -4,10 +4,9 @@ from config import PROJECT_ROOT
 
 class VectorDBService:
 
-    def __init__(self):
-        storage_path = PROJECT_ROOT / "chroma_db"
-        self.client = chromadb.PersistentClient(path=storage_path)
-        self.collection = self.client.get_or_create_collection(name="hotel_knowledge")
+    def __init__(self, collection="hotel_knowledge"):
+        self.client = chromadb.PersistentClient(path=PROJECT_ROOT / "chroma_db")
+        self.collection = self.client.get_or_create_collection(name=collection, metadata={"hnsw:space": "cosine"})
 
     def upsert_batch(self, documents, ids, metadatas):
         if documents:
@@ -21,13 +20,10 @@ class VectorDBService:
         results = self.collection.get(where=filter_dict)
         return results['ids']
 
-    def search(self, query_text, n_results=3):
+    def search(self, query_text, n_results=3, where_filter=None):
         results = self.collection.query(
             query_texts=[query_text],
-            n_results=n_results
+            n_results=n_results,
+            where=where_filter
         )
-
-        context = "\n---\n".join(results['documents'][0])
-        nearest_distance = results['distances'][0][0]
-
-        return context, nearest_distance
+        return results
