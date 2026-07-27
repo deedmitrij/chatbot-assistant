@@ -9,8 +9,13 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 # Load environment variables from .env file
 load_dotenv(PROJECT_ROOT / ".env")
 
+# Database configuration
+DB_PATH = os.getenv("DB_PATH", str(PROJECT_ROOT / "pending_requests.db"))
+
 # Vector DB configuration
 VECTOR_SIMILARITY_THRESHOLD = float(os.getenv("VECTOR_SIMILARITY_THRESHOLD", 1.2))
+CHROMA_HOST = os.getenv("CHROMA_HOST")
+CHROMA_PORT = int(os.getenv("CHROMA_PORT", "8000")) if os.getenv("CHROMA_PORT") else None
 
 # Telegram configuration
 TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN")

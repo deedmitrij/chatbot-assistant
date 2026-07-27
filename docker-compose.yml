@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: hotel-chatbot-chromadb
+    ports:
+      - "8543:8000"
+    volumes:
+      - chroma-data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma
+    restart: always
+
+  web:
+    build: .
+    container_name: hotel-chatbot-web
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    environment:
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+      - DB_PATH=/app/data/pending_requests.db
+    volumes:
+      - app-data:/app/data
+    depends_on:
+      - chromadb
+    restart: always
+
+volumes:
+  chroma-data:
+  app-data:

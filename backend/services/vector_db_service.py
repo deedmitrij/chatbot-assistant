@@ -5,7 +5,15 @@ from config import PROJECT_ROOT
 class VectorDBService:
 
     def __init__(self, collection="hotel_knowledge"):
-        self.client = chromadb.PersistentClient(path=PROJECT_ROOT / "chroma_db")
+        from config import PROJECT_ROOT, CHROMA_HOST, CHROMA_PORT
+        if CHROMA_HOST:
+            # Client-Server Mode (for multi-container / Dockerized setup)
+            print(f"📡 Connecting to ChromaDB server at http://{CHROMA_HOST}:{CHROMA_PORT}")
+            self.client = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
+        else:
+            # Persistent Local Mode (for local development and testing)
+            self.client = chromadb.PersistentClient(path=PROJECT_ROOT / "chroma_db")
+            
         self.collection = self.client.get_or_create_collection(name=collection, metadata={"hnsw:space": "cosine"})
 
     def upsert_batch(self, documents, ids, metadatas):

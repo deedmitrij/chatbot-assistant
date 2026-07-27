@@ -58,8 +58,8 @@ def telegram_webhook():
         callback = data["callback_query"]
         req_id = callback["data"].replace("approve_", "")
 
-        # Get the original AI suggestion from our state
-        request_info = chat_manager.pending_requests.get(req_id)
+        # Get the original AI suggestion from our database
+        request_info = chat_manager.db_service.get_request(req_id)
         if request_info:
             chat_manager.fulfill_request(req_id, request_info["suggestion"])
 
@@ -79,4 +79,4 @@ def telegram_webhook():
 
 if __name__ == '__main__':
     bootstrap_manager()
-    app.run(debug=False, port=5000)
+    app.run(host='0.0.0.0', debug=False, port=5000)

@@ -58,3 +58,32 @@ class TelegramService:
         except Exception as e:
             print(f"❌ Telegram Exception: {e}")
             return None
+
+    @staticmethod
+    def send_operator_call() -> Optional[int]:
+        """
+        Sends an alert to the operator when a guest explicitly requests a human.
+        """
+        message = (
+            f"🚨 **Operator Requested**\n\n"
+            f"👤 A guest has clicked the 'Contact Operator' button and needs immediate assistance."
+        )
+        payload = {
+            "chat_id": TG_ADMIN_ID,
+            "text": message,
+            "parse_mode": "Markdown",
+        }
+        try:
+            response = requests.post(
+                url=f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage",
+                json=payload
+            )
+            resp_data = response.json()
+            if resp_data.get("ok"):
+                return resp_data["result"]["message_id"]
+            else:
+                print(f"❌ Telegram Error sending operator call: {resp_data}")
+                return None
+        except Exception as e:
+            print(f"❌ Telegram Exception in operator call: {e}")
+            return None
