@@ -24,3 +24,13 @@ def handle_chat():
 def check_status(req_id):
     status_info = current_app.chat_manager.check_status(req_id)
     return jsonify(status_info)
+
+
+@chat_api.route('/operator/call', methods=['POST'])
+def handle_operator_call():
+    chat_manager = getattr(current_app, 'chat_manager', None)
+    if chat_manager is None:
+        return jsonify({"error": "System initializing, please try again in a moment."}), 503
+
+    chat_manager.tg_service.send_operator_call()
+    return jsonify({"status": "ok"})
