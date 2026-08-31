@@ -1,6 +1,7 @@
 import json
 import os
 import pandas as pd
+from pathlib import Path
 from typing import List, Dict
 from ragas import evaluate
 from ragas.metrics import (
@@ -19,6 +20,13 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from backend.managers.chat_manager import ChatManager
 from backend.managers.factory import create_app_manager
 from config import HF_API_TOKEN, HF_BASE_URL, CHAT_MODEL, EMBEDDING_MODEL
+
+# Resolved relative to this module's own location (not the process's current
+# working directory), so `python backend/evaluation/evaluator.py` finds its
+# bundled datasets regardless of the caller's cwd.
+EVALUATION_DIR = Path(__file__).resolve().parent
+EVAL_DATASET_PATH = EVALUATION_DIR / "eval_dataset.json"
+EVAL_NEGATIVE_DATASET_PATH = EVALUATION_DIR / "eval_negative.json"
 
 
 class RAGEvaluator:
@@ -141,5 +149,5 @@ class RAGEvaluator:
 if __name__ == "__main__":
     chat_manager = create_app_manager(load_data=False)
     evaluator = RAGEvaluator(chat_manager)
-    evaluator.run("eval_dataset.json", output_path="results/evaluation_results.csv")
-    evaluator.run("eval_negative.json", output_path="results/evaluation_safety.csv")
+    evaluator.run(str(EVAL_DATASET_PATH), output_path="results/evaluation_results.csv")
+    evaluator.run(str(EVAL_NEGATIVE_DATASET_PATH), output_path="results/evaluation_safety.csv")
