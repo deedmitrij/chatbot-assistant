@@ -92,7 +92,7 @@ class RAGEvaluator:
 
             questions.append(query)
             answers.append(eval_result["answer"])
-            contexts.append([eval_result["context"]]) # RAGAS expects contexts as a list of strings for each question
+            contexts.append(eval_result["context"]) # RAGAS expects contexts as a list of strings for each question
             ground_truths.append(gt)
 
             print(f"✅ Processed: {query[:30]}...")
