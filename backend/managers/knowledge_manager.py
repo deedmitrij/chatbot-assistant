@@ -114,7 +114,7 @@ class KnowledgeManager:
         # Search if such a question already exists
         existing_idx = next((i for i, item in enumerate(data) if item['q'] == question), None)
 
-        if existing_idx:
+        if existing_idx is not None:
             # If found, replace the old answer with a new one
             data[existing_idx] = new_entry
         else:
