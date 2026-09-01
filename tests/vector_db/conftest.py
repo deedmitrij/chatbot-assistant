@@ -27,8 +27,15 @@ def test_case(vector_db_service, request):
     """
     Load the dataset to the vector database.
     Pass the test case to the test function.
+
+    vector_db_service is session-scoped (real ChromaDB + embedding model,
+    expensive to set up), so the collection is cleared before each dataset is
+    loaded. Otherwise documents from one test file's dataset stay in the
+    collection and can outrank another file's expected results.
     """
     dataset, case = request.param
+    existing_ids = vector_db_service.collection.get()["ids"]
+    vector_db_service.delete_by_ids(existing_ids)
     vector_db_service.upsert_batch(
         documents=dataset["documents"],
         ids=dataset["ids"],
