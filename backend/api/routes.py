@@ -22,7 +22,11 @@ def handle_chat():
 
 @chat_api.route('/check_status/<req_id>', methods=['GET'])
 def check_status(req_id):
-    status_info = current_app.chat_manager.check_status(req_id)
+    chat_manager = getattr(current_app, 'chat_manager', None)
+    if chat_manager is None:
+        return jsonify({"error": "System initializing, please try again in a moment."}), 503
+
+    status_info = chat_manager.check_status(req_id)
     return jsonify(status_info)
 
 

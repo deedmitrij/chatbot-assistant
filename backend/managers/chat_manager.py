@@ -70,10 +70,12 @@ class ChatManager:
         """
         Evaluation-only contract: returns the exact context used and the answer — just data for RAGAS.
         """
-        context, distance = self.knowledge_manager.get_relevant_context(user_query)
-        ai_answer, is_ai_confident = self.llm.get_answer(user_query, context)
+        vector_search_result = self.knowledge_manager.get_relevant_context(user_query)
+        context = vector_search_result['documents'][0]
 
-        return {"answer": ai_answer, "context": context}
+        ai_response = self.llm.get_answer(user_query, context)
+
+        return {"answer": ai_response['answer'], "context": context}
 
     def fulfill_request(self, req_id: str, final_answer: str) -> None:
         """

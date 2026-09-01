@@ -2,7 +2,7 @@ import json
 import os
 import yaml
 import numpy as np
-from typing import List, Union, Tuple
+from typing import List, Union
 from openai import OpenAI
 from huggingface_hub import InferenceClient
 from backend.constants import LLMRole
@@ -36,7 +36,7 @@ class LLMService:
             prompt = data["system_prompt"]
             return prompt
 
-    def get_answer(self, query: str, context: list[str]) -> Tuple[str, bool]:
+    def get_answer(self, query: str, context: list[str]) -> dict:
         """
         Generates a natural language response based on the retrieved context.
 
@@ -45,7 +45,8 @@ class LLMService:
             context (list[str]): The most relevant text chunks retrieved from the vector database.
 
         Returns:
-            Tuple[str, bool]: The generated response and its confidence level.
+            dict: {"confidence": bool, "answer": str}, on both the success and
+            failure paths, so callers can rely on a single dict-shaped contract.
         """
         system_prompt = self._get_system_prompt(self.role)
         context = "\n".join(context)
@@ -63,7 +64,7 @@ class LLMService:
 
             return json.loads(response)
         except Exception as e:
-            return f"⚠️ Error processing request: {str(e)}", False
+            return {"confidence": False, "answer": f"⚠️ Error processing request: {str(e)}"}
 
     def embed_content(self, content: Union[str, List[str]], is_query: bool = False) -> np.ndarray:
         """

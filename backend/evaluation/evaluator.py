@@ -1,6 +1,7 @@
 import json
 import os
 import pandas as pd
+from pathlib import Path
 from typing import List, Dict
 from ragas import evaluate
 from ragas.metrics import (
@@ -19,6 +20,18 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from backend.managers.chat_manager import ChatManager
 from backend.managers.factory import create_app_manager
 from config import HF_API_TOKEN, HF_BASE_URL, CHAT_MODEL, EMBEDDING_MODEL
+
+# Resolved relative to this module's own location (not the process's current
+# working directory), so `python backend/evaluation/evaluator.py` finds its
+# bundled datasets and saves its results into backend/evaluation/results/
+# regardless of the caller's cwd.
+EVALUATION_DIR = Path(__file__).resolve().parent
+EVAL_DATASET_PATH = EVALUATION_DIR / "eval_dataset.json"
+EVAL_NEGATIVE_DATASET_PATH = EVALUATION_DIR / "eval_negative.json"
+
+RESULTS_DIR = EVALUATION_DIR / "results"
+EVAL_RESULTS_CSV_PATH = RESULTS_DIR / "evaluation_results.csv"
+EVAL_SAFETY_RESULTS_CSV_PATH = RESULTS_DIR / "evaluation_safety.csv"
 
 
 class RAGEvaluator:
@@ -92,7 +105,7 @@ class RAGEvaluator:
 
             questions.append(query)
             answers.append(eval_result["answer"])
-            contexts.append([eval_result["context"]]) # RAGAS expects contexts as a list of strings for each question
+            contexts.append(eval_result["context"]) # RAGAS expects contexts as a list of strings for each question
             ground_truths.append(gt)
 
             print(f"✅ Processed: {query[:30]}...")
@@ -106,7 +119,7 @@ class RAGEvaluator:
 
         return Dataset.from_dict(data_dict)
 
-    def run(self, dataset_path: str, output_path: str = "results/evaluation_results.csv") -> pd.DataFrame:
+    def run(self, dataset_path: str, output_path: str = str(EVAL_RESULTS_CSV_PATH)) -> pd.DataFrame:
         """
         Main execution method to load data, run evaluation, and save results.
 
@@ -129,6 +142,7 @@ class RAGEvaluator:
         )
 
         df = result.to_pandas()
+        Path(output_path).parent.mkdir(parents=True, exist_ok=True)
         df.to_csv(output_path, index=False)
 
         print(f"\n✨ Evaluation Complete! Results saved to {output_path}")
@@ -141,5 +155,5 @@ class RAGEvaluator:
 if __name__ == "__main__":
     chat_manager = create_app_manager(load_data=False)
     evaluator = RAGEvaluator(chat_manager)
-    evaluator.run("eval_dataset.json", output_path="results/evaluation_results.csv")
-    evaluator.run("eval_negative.json", output_path="results/evaluation_safety.csv")
+    evaluator.run(str(EVAL_DATASET_PATH), output_path=str(EVAL_RESULTS_CSV_PATH))
+    evaluator.run(str(EVAL_NEGATIVE_DATASET_PATH), output_path=str(EVAL_SAFETY_RESULTS_CSV_PATH))
