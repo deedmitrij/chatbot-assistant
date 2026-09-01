@@ -25,7 +25,7 @@
       },
       {
         "name": "Typo Query",
-        "query": "pol opning tims",
+        "query": "pool opning tims",
         "expected_id": "doc_pool",
         "max_distance": 0.75
       }

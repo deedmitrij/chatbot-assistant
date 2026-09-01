@@ -7,7 +7,9 @@ chat_api = Blueprint('chat_api', __name__)
 @chat_api.route('/process', methods=['POST'])
 def handle_chat():
     chat_manager = getattr(current_app, 'chat_manager', None)
-    data = request.json
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        data = {}
     user_msg = data.get('message')
 
     if not user_msg:

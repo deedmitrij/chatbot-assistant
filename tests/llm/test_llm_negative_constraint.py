@@ -1,6 +1,8 @@
 import pytest
 from tests.llm.conftest import get_all_test_cases_from_file
 
+pytestmark = pytest.mark.live
+
 
 @pytest.mark.parametrize("test_case", get_all_test_cases_from_file("llm_negative_constraint.json"), ids=lambda x: x["name"])
 def test_llm_negative_constraint(llm_as_a_hotel_assistant, llm_as_a_judge, test_case):
