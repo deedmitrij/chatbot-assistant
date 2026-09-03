@@ -1,0 +1,89 @@
+[
+  {
+    "id": "retrieval-metrics-dataset",
+    "dataset": {
+      "documents": [
+        "The indoor heated pool is open 24 hours a day for all guests.",
+        "Our outdoor pool overlooks the garden and is open from 7 AM to 9 PM.",
+        "The fitness center is open 24/7 and includes free weights and cardio machines.",
+        "Room service is available around the clock, including late-night snacks.",
+        "Breakfast buffet is served every morning from 6:30 AM to 10:00 AM.",
+        "High-speed Wi-Fi is complimentary throughout the hotel, including all guest rooms.",
+        "Standard check-in begins at 3:00 PM and check-out is by 12:00 PM noon.",
+        "Our on-site spa offers massages and facials by appointment only.",
+        "Self-parking is available on-site for a nightly fee of $20."
+      ],
+      "ids": [
+        "pool_indoor",
+        "pool_outdoor",
+        "gym_247",
+        "room_service_247",
+        "dining_breakfast",
+        "tech_wifi",
+        "policy_checkin",
+        "wellness_spa",
+        "policy_parking"
+      ],
+      "metadatas": [
+        {"type": "amenity"},
+        {"type": "amenity"},
+        {"type": "amenity"},
+        {"type": "dining"},
+        {"type": "dining"},
+        {"type": "tech"},
+        {"type": "policy"},
+        {"type": "amenity"},
+        {"type": "policy"}
+      ]
+    },
+    "cases": [
+      {
+        "name": "single relevant: breakfast hours",
+        "query": "What time does breakfast start?",
+        "expected_ids": ["dining_breakfast"],
+        "relevance_grades": {"dining_breakfast": 3}
+      },
+      {
+        "name": "single relevant: wifi cost",
+        "query": "Do I have to pay for Wi-Fi?",
+        "expected_ids": ["tech_wifi"],
+        "relevance_grades": {"tech_wifi": 3}
+      },
+      {
+        "name": "single relevant: check-in time",
+        "query": "What time is check-in?",
+        "expected_ids": ["policy_checkin"],
+        "relevance_grades": {"policy_checkin": 3}
+      },
+      {
+        "name": "single relevant: parking cost",
+        "query": "How much does parking cost?",
+        "expected_ids": ["policy_parking"],
+        "relevance_grades": {"policy_parking": 3}
+      },
+      {
+        "name": "single relevant: spa booking",
+        "query": "Can I book a massage?",
+        "expected_ids": ["wellness_spa"],
+        "relevance_grades": {"wellness_spa": 3}
+      },
+      {
+        "name": "multi relevant: anytime services",
+        "query": "What hotel services are available at any hour, day or night?",
+        "expected_ids": ["gym_247", "room_service_247"],
+        "relevance_grades": {
+          "gym_247": 3,
+          "room_service_247": 3,
+          "pool_indoor": 1
+        },
+        "_relevance_note": "pool_indoor is graded 1 (partially relevant), not listed in expected_ids: its document literally says 'open 24 hours a day', which does answer an 'any hour' question, but it is a pool amenity rather than a staffed service like the other two. Kept out of expected_ids (used by HitRate/Recall/Precision) so this addition only affects NDCG's graded view, not the binary metrics already calibrated against this dataset."
+      },
+      {
+        "name": "multi relevant: pool options",
+        "query": "What pool options do you have?",
+        "expected_ids": ["pool_indoor", "pool_outdoor"],
+        "relevance_grades": {"pool_indoor": 3, "pool_outdoor": 3}
+      }
+    ]
+  }
+]

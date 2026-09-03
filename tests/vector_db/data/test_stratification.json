@@ -17,29 +17,29 @@
         "name": "Gray Zone: Vague Help",
         "query": "I need some assistance with my stay",
         "expected_action": "HITL",
-        "min_dist": 0.6,
-        "max_dist": 0.75
+        "min_dist": 0.65,
+        "max_dist": 0.79
       },
       {
         "name": "Gray Zone: Ambiguous Safety",
         "query": "Is it safe here?",
         "expected_action": "HITL",
-        "min_dist": 0.6,
-        "max_dist": 0.75
+        "min_dist": 0.65,
+        "max_dist": 0.79
       },
       {
         "name": "Garbage: Pizza Recipe",
         "query": "How to make a pepperoni pizza?",
         "expected_action": "REJECT",
-        "min_dist": 0.76,
-        "max_dist": 1.0
+        "min_dist": 0.81,
+        "max_dist": 1.05
       },
       {
         "name": "Garbage: Random Tech",
         "query": "How to install Linux on a toaster?",
         "expected_action": "REJECT",
-        "min_dist": 0.76,
-        "max_dist": 1.0
+        "min_dist": 0.81,
+        "max_dist": 1.05
       }
     ]
   }

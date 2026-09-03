@@ -26,6 +26,13 @@
         "filter": {"role": "staff"},
         "expected_id": "staff_br",
         "max_distance": 0.5
+      },
+      {
+        "name": "Semantic Discrimination Without Filter",
+        "query": "When do staff members eat breakfast in the kitchen?",
+        "filter": null,
+        "expected_id": "staff_br",
+        "max_distance": 0.35
       }
     ]
   }
