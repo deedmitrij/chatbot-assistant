@@ -1,6 +1,6 @@
 [
   {
-    "id": "pool-recall-test",
+    "id": "pool-retrieval-test",
     "dataset": {
       "documents": [
         "The outdoor infinity pool is open from 8 AM to 10 PM.",
@@ -16,28 +16,28 @@
     },
     "cases": [
       {
-        "name": "Recall Check: Indoor Pool",
+        "name": "HitRate@K Check: Indoor Pool",
         "query": "Is there a pool I can use at night?",
         "expected_id": "pool_indoor",
         "n_results": 2,
         "max_distance": 1.0
       },
       {
-        "name": "Recall Check: Night Swimming (24/7)",
+        "name": "HitRate@K Check: Night Swimming (24/7)",
         "query": "I want to swim at 3 AM. Is it possible?",
         "expected_id": "pool_indoor",
         "n_results": 2,
         "max_distance": 1.45
       },
       {
-        "name": "Recall Check: Synonym for Towels",
+        "name": "HitRate@K Check: Synonym for Towels",
         "query": "Do you provide linens for the beach or pool?",
         "expected_id": "pool_towels",
         "n_results": 2,
         "max_distance": 1.1
       },
       {
-        "name": "Recall Check: Safety Overlap",
+        "name": "HitRate@K Check: Safety Overlap",
         "query": "Is the sauna safe for kids?",
         "expected_id": "pool_sauna",
         "n_results": 2,

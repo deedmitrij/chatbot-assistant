@@ -4,6 +4,22 @@ from tests.vector_db.conftest import get_all_test_cases_from_file
 
 @pytest.mark.parametrize("test_case", get_all_test_cases_from_file("test_retrieval.json"), indirect=True, ids=lambda x: x[1]["name"])
 def test_vector_db_retrieval(vector_db_service, test_case):
+    """
+    Concept: Top-1 accuracy / HitRate@1 — is the single best-ranked result
+    the correct document?
+
+    Validates that across differently-worded versions of the same question
+    (clean / noisy / typo / paraphrase — the paraphrase case shares no
+    keywords with its target document), the top result stays correct and
+    its distance stays under a ceiling. Each case is checked individually,
+    not averaged into one score — see test_vector_db_retrieval_metrics.py
+    for that.
+
+    Exists to catch regressions where paraphrasing or typos push the
+    correct answer out of the top spot, since production only uses the
+    LLM's answer when the nearest match is confident (see
+    VECTOR_SIMILARITY_THRESHOLD in config.py).
+    """
     results = vector_db_service.search(query_text=test_case["query"])
 
     doc_id = results['ids'][0][0]

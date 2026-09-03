@@ -28,6 +28,12 @@
         "query": "pool opning tims",
         "expected_id": "doc_pool",
         "max_distance": 0.75
+      },
+      {
+        "name": "Paraphrase Query",
+        "query": "Until what hour can guests go for an evening swim?",
+        "expected_id": "doc_pool",
+        "max_distance": 0.55
       }
     ]
   }
