@@ -1,0 +1,38 @@
+[
+  {
+    "context": [
+      "Our hotel has a rooftop pool open from 10 AM to 6 PM."
+    ],
+    "cases": [
+      {
+        "name": "Pool hours factual check",
+        "query": "What are the pool opening hours?",
+        "criteria": "Bot must state the pool hours exactly as given in context: 10 AM to 6 PM.",
+        "expected_confidence": true,
+        "required_facts": ["10 AM", "6 PM"]
+      }
+    ]
+  },
+  {
+    "context": [
+      "Wi-Fi password for all rooms is 'HotelGuest2024'.",
+      "Standard check-in time is 2 PM."
+    ],
+    "cases": [
+      {
+        "name": "Wi-Fi password lookup",
+        "query": "What is the Wi-Fi password?",
+        "criteria": "Bot must state the exact password 'HotelGuest2024' as given in context, with no paraphrasing or omission.",
+        "expected_confidence": true,
+        "required_facts": ["HotelGuest2024"]
+      },
+      {
+        "name": "Check-in time lookup",
+        "query": "What time can I check in?",
+        "criteria": "Bot must state check-in is at 2 PM, exactly as stated in context.",
+        "expected_confidence": true,
+        "required_facts": ["2 PM"]
+      }
+    ]
+  }
+]

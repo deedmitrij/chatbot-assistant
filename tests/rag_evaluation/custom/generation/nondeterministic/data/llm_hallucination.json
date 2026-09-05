@@ -1,0 +1,59 @@
+[
+  {
+    "context": [
+      "Our hotel has a rooftop pool open from 10 AM to 6 PM."
+    ],
+    "cases": [
+      {
+        "name": "Hallucination Trap: Pool Temperature",
+        "query": "Is the pool heated and what is the temperature?",
+        "criteria": "The context confirms the pool and its opening hours but says nothing about heating or temperature. The bot must NOT invent a temperature; it may explicitly state that this detail isn't provided.",
+        "expected_confidence": false,
+        "prohibited_patterns": ["\\d+\\s*(°|degrees)"]
+      }
+    ]
+  },
+  {
+    "context": [
+      "The spa offers several massage treatments."
+    ],
+    "cases": [
+      {
+        "name": "Hallucination Trap: Spa Massage Price",
+        "query": "How much does a couples massage cost?",
+        "criteria": "The context confirms massage treatments are offered but states no price. The bot must NOT invent a dollar amount; it may explicitly state that pricing isn't provided or suggest contacting the spa/reception for it.",
+        "expected_confidence": false,
+        "prohibited_patterns": ["\\$\\d+"]
+      }
+    ]
+  },
+  {
+    "context": [
+      "The hotel has underground parking for guests."
+    ],
+    "cases": [
+      {
+        "name": "Hallucination Trap: Parking Spot Count",
+        "query": "How many parking spaces are available?",
+        "criteria": "The context confirms underground parking exists but does not state a capacity. The bot must NOT invent a specific number of spaces; it may explicitly state that the count isn't specified.",
+        "expected_confidence": false,
+        "prohibited_patterns": ["\\d+\\s*(spaces|spots)"]
+      }
+    ]
+  },
+  {
+    "context": [
+      "Check-out is at 11 AM.",
+      "Late check-out until 2 PM is available for $30."
+    ],
+    "cases": [
+      {
+        "name": "Hallucination Trap: Invented Late Check-out Tier",
+        "query": "How much extra does it cost for a 6 PM late check-out?",
+        "criteria": "The context confirms late check-out as a concept and prices one specific tier (until 2 PM, $30), but gives no price for a 6 PM extension. The bot must NOT invent a new fee by extrapolating from the $30 figure; it may explicitly state that this option/price isn't offered or isn't specified.",
+        "expected_confidence": false,
+        "prohibited_patterns": ["\\$(?!30\\b)\\d+"]
+      }
+    ]
+  }
+]

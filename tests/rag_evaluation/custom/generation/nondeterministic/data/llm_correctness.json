@@ -1,0 +1,53 @@
+[
+  {
+    "context": [
+      "Check-out is at 11 AM.",
+      "Late check-out until 2 PM is available for $30.",
+      "Smoking is strictly prohibited in all rooms."
+    ],
+    "cases": [
+      {
+        "name": "Late check-out fee check",
+        "query": "Can I stay until 1 PM for free?",
+        "criteria": "Bot must say NO to 'free' and mention the $30 charge, correctly applying the late check-out rule rather than just restating it.",
+        "expected_confidence": true,
+        "required_facts": ["$30"]
+      },
+      {
+        "name": "Smoking policy check",
+        "query": "Is it okay if I smoke on the balcony?",
+        "criteria": "Bot must strictly deny smoking, correctly applying the 'strictly prohibited in all rooms' rule to the balcony question.",
+        "expected_confidence": true
+      }
+    ]
+  },
+  {
+    "context": [
+      "Our hotel provides a shuttle to the airport every hour for $15.",
+      "Taxi service can be booked at the reception and costs around $40."
+    ],
+    "cases": [
+      {
+        "name": "Comparison query",
+        "query": "What is the cheapest way to get to the airport?",
+        "criteria": "The bot must compare the prices ($15 vs $40) and explicitly recommend the shuttle as the cheapest option, correctly deriving the conclusion rather than just listing both options.",
+        "expected_confidence": true,
+        "required_facts": ["$15", "$40", "shuttle"]
+      }
+    ]
+  },
+  {
+    "context": [
+      "Pets allowed: small dogs and cats under 15 lbs.",
+      "A pet deposit of $50 applies."
+    ],
+    "cases": [
+      {
+        "name": "Rule exclusion: pet not on allowed list",
+        "query": "Can I bring my pet parrot?",
+        "criteria": "A parrot is not a dog or cat, so it is not on the allowed-pets list. The bot must correctly deny the request by logical exclusion from the stated rule, not just because parrots aren't mentioned.",
+        "expected_confidence": true
+      }
+    ]
+  }
+]

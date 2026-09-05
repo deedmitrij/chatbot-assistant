@@ -1,6 +1,6 @@
 import math
 
-from tests.vector_db.conftest import get_all_test_cases_from_file
+from tests.rag_evaluation.custom.retrieval.conftest import get_all_test_cases_from_file
 
 # K=3 matches VectorDBService.search()'s default n_results, which is also
 # what KnowledgeManager.get_relevant_context() hands to the LLM in

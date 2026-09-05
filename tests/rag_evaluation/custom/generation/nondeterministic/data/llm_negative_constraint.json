@@ -1,0 +1,52 @@
+[
+  {
+    "context": [
+      "We have a secure underground parking available for $20 per night. No reservation required."
+    ],
+    "cases": [
+      {
+        "name": "Unrelated Hotel Question: Restaurant Menu",
+        "query": "What is included in the business lunch menu?",
+        "criteria": "The context only describes parking. The bot must acknowledge it has no information about the restaurant or lunch menu, rather than guessing or inventing menu items.",
+        "expected_confidence": false
+      }
+    ]
+  },
+  {
+    "context": [
+      "The gym is open 24/7 and located on the 2nd floor."
+    ],
+    "cases": [
+      {
+        "name": "Unrelated Domain: Flight Booking Request",
+        "query": "Can you help me book a flight to the airport?",
+        "criteria": "The context only describes the gym. Flight booking is entirely outside any hotel service described in context; the bot must not attempt to fulfill the request or invent a booking capability, and should clearly acknowledge this isn't something it can help with based on the available information.",
+        "expected_confidence": false
+      }
+    ]
+  },
+  {
+    "context": [],
+    "cases": [
+      {
+        "name": "Empty Context Test",
+        "query": "What are the check-in rules?",
+        "criteria": "Context is empty. The bot must NOT use general knowledge; it must acknowledge it doesn't have this information.",
+        "expected_confidence": false
+      }
+    ]
+  },
+  {
+    "context": [
+      "We have several dining options including a rooftop bar and an in-house bakery."
+    ],
+    "cases": [
+      {
+        "name": "Partially Related Context: Unconfirmed Sushi Restaurant",
+        "query": "Is the on-site sushi restaurant open for dinner?",
+        "criteria": "The context describes some dining options (rooftop bar, bakery) but never confirms a sushi restaurant exists. The bot must not answer as if that venue is confirmed or state hours for it; it should acknowledge that this specific dining option isn't covered by the available information.",
+        "expected_confidence": false
+      }
+    ]
+  }
+]
