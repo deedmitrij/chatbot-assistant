@@ -6,7 +6,7 @@ from typing import List, Union
 from openai import OpenAI
 from huggingface_hub import InferenceClient
 from backend.constants import LLMRole
-from config import HF_API_TOKEN, HF_BASE_URL, CHAT_MODEL, EMBEDDING_MODEL
+from config import HF_API_TOKEN, LLM_BASE_URL, LLM_API_KEY, CHAT_MODEL, EMBEDDING_MODEL
 
 
 class LLMService:
@@ -16,8 +16,8 @@ class LLMService:
         self.chat_model = CHAT_MODEL
         self.embedding_model = EMBEDDING_MODEL
         self.chat_client = OpenAI(
-            api_key=HF_API_TOKEN,
-            base_url=HF_BASE_URL
+            api_key=LLM_API_KEY,
+            base_url=LLM_BASE_URL
         )
         self.inference_client = InferenceClient(api_key=HF_API_TOKEN)
         self.role = role

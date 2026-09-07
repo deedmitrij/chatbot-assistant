@@ -21,11 +21,16 @@ CHROMA_PORT = int(os.getenv("CHROMA_PORT", "8000")) if os.getenv("CHROMA_PORT") 
 TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN")
 TG_ADMIN_ID = os.getenv("TG_ADMIN_ID")
 
-# HuggingFace configuration
+# HuggingFace configuration (used for embeddings and RAGAS evaluation)
 HF_API_TOKEN = os.getenv("HF_API_TOKEN")
 HF_BASE_URL = os.getenv("HF_BASE_URL")
-CHAT_MODEL = os.getenv("CHAT_MODEL")
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
+
+# LLM chat configuration (provider-neutral: any OpenAI-compatible endpoint,
+# e.g. Hugging Face router or a local Ollama server)
+LLM_BASE_URL = os.getenv("LLM_BASE_URL")
+LLM_API_KEY = os.getenv("LLM_API_KEY")
+CHAT_MODEL = os.getenv("CHAT_MODEL")
 
 # Knowledge base configuration
 FAQ_PATH = PROJECT_ROOT / "knowledge_base.json"
