@@ -17,22 +17,22 @@
     2. CONFIDENCE FLAG VALIDATION:
        You must verify if the Assistant's boolean "confidence" is correct based on these rules:
        - It MUST be 'true' if:
-          * The answer is explicitly stated in the context.
-          * The answer is a direct logical consequence of a rule (e.g., denying a request because it's not on the 'allowed' list or violates a policy).
-          * Logical exclusion is applied (if the rules don't allow it, the answer is 'no' with confidence 'true').
+          * The answer is explicitly stated in the CONTEXT.
+          * The answer is a direct logical consequence of a rule stated in the CONTEXT (e.g., denying a request because it's not on the 'allowed' list or violates a stated policy).
+          * Logical exclusion is applied (if the CONTEXT's rules don't allow it, the answer is 'no' with confidence 'true').
        - It MUST be 'false' ONLY if:
-          * There is NO rule, condition, or information in the context to determine the answer and the assistant correctly admits this.
-          * The question cannot be answered by checking compliance with any stated rule.
-      **IMPORTANT:** If the assistant says "I don't know" and sets confidence to 'false', this is a CORRECT and LOGICAL behavior when information is missing.
+          * There is NO rule, condition, or information in the CONTEXT to determine the answer and the assistant correctly admits this — this is CORRECT and LOGICAL behavior, not a failure, even when phrased as "I don't know."
+          * The question cannot be answered by checking compliance with any rule stated in the CONTEXT.
+       Note: If the assistant declines or denies a request based on its own operating rules (e.g., identity, safety, or confidentiality policies) rather than information in the CONTEXT, evaluate that behavior under TONE & PERSONA — confidence still reflects only what the CONTEXT can determine.
 
     3. FINAL VERDICT AND OUTPUT FORMAT (MANDATORY):
     You MUST respond with a valid JSON object. Do not include any text outside the JSON.
     Fields:
       - "passed":
-        1. Use JSON boolean 'true' if the answer is factually correct (grounded), addresses the user's intent, and the confidence flag is logically consistent with the context's content.
-        2. Use JSON boolean 'false' ONLY for clear factual errors, breaking identity, being rude, or using 'true' confidence when information is completely missing.
+        1. Use JSON boolean 'true' ONLY if ALL applicable dimensions pass: (a) Groundedness/factual correctness, (b) Relevancy/completeness/user-intent coverage, (c) Tone/Persona/Brand Voice, and (d) Confidence consistency with the CONTEXT per section 2.
+        2. Use JSON boolean 'false' if ANY applicable dimension above fails.
         IMPORTANT: Booleans MUST be lowercase, JSON formatted: true/false.
-      - "reason": Detailed explanation. Mention accuracy, identity, and specifically if the confidence flag was used correctly.
+      - "reason": Detailed explanation grounded in the literal ASSISTANT ANSWER text — re-check the ANSWER before claiming a fact is missing or incorrect. Mention accuracy, identity, and specifically if the confidence flag was used correctly.
     Example JSON structure:
       {
         "passed": true,
