@@ -159,6 +159,18 @@ To run the automated QA suite:
 pytest .\tests\
 ```
 
+**Generating HTML Reports**
+
+Self-contained, portfolio-friendly HTML reports for the Custom Retrieval and Custom Generation evaluation suites (via [pytest-html](https://pytest-html.readthedocs.io/)):
+```powershell
+# Custom Retrieval (fast, deterministic — expands all rows so aggregate metrics are visible without clicking)
+pytest tests\rag_evaluation\custom\retrieval --html=reports\custom_retrieval.html --self-contained-html -o render_collapsed=""
+
+# Custom Generation (live, calls the configured LLM — requires a running Assistant/Judge endpoint, e.g. local Ollama)
+pytest tests\rag_evaluation\custom\generation\nondeterministic -m live --html=reports\custom_generation.html --self-contained-html
+```
+Reports are written to `reports/` (gitignored) and open directly in a browser — no external assets needed.
+
 ---
 
 ## 🔗 API Setup

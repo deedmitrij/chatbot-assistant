@@ -12,3 +12,5 @@ langchain-huggingface>=1.2.0
 sentence-transformers==5.2.2
 pytest==8.0.0
 pytest-asyncio==0.23.5
+pytest-html==4.2.0
+pytest-metadata==3.1.1
