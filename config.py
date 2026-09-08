@@ -31,6 +31,7 @@ EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
 LLM_BASE_URL = os.getenv("LLM_BASE_URL")
 LLM_API_KEY = os.getenv("LLM_API_KEY")
 CHAT_MODEL = os.getenv("CHAT_MODEL")
+JUDGE_MODEL = os.getenv("JUDGE_MODEL", CHAT_MODEL)
 
 # Knowledge base configuration
 FAQ_PATH = PROJECT_ROOT / "knowledge_base.json"

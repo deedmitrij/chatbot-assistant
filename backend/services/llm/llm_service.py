@@ -6,14 +6,18 @@ from typing import List, Union
 from openai import OpenAI
 from huggingface_hub import InferenceClient
 from backend.constants import LLMRole
-from config import HF_API_TOKEN, LLM_BASE_URL, LLM_API_KEY, CHAT_MODEL, EMBEDDING_MODEL
+from config import HF_API_TOKEN, LLM_BASE_URL, LLM_API_KEY, CHAT_MODEL, JUDGE_MODEL, EMBEDDING_MODEL
 
 
 class LLMService:
     """Handles AI interactions with LLM."""
 
     def __init__(self, role: LLMRole = LLMRole.ASSISTANT):
-        self.chat_model = CHAT_MODEL
+        ROLE_MODEL_MAP = {
+            LLMRole.ASSISTANT: CHAT_MODEL,
+            LLMRole.JUDGE: JUDGE_MODEL
+        }
+        self.chat_model = ROLE_MODEL_MAP[role]
         self.embedding_model = EMBEDDING_MODEL
         self.chat_client = OpenAI(
             api_key=LLM_API_KEY,
@@ -52,15 +56,23 @@ class LLMService:
         context = "\n".join(context)
         prompt = f"{system_prompt}\n\nCONTEXT:\n'''\n{context}\n'''"
         try:
-            response = self.chat_client.chat.completions.create(
-                model=self.chat_model,
-                messages=[
+            create_kwargs = {
+                "model": self.chat_model,
+                "messages": [
                     {"role": "system", "content": prompt},
                     {"role": "user", "content": query}
                 ],
-                max_tokens=150,
-                temperature=0.1
-            ).choices[0].message.content
+                "max_tokens": 150,
+                "temperature": 0.1
+            }
+            if self.role == LLMRole.JUDGE:
+                # Some Judge models (e.g. Qwen3) default to a "thinking" mode
+                # that spends the token budget on hidden reasoning before any
+                # visible output. Disabling it keeps latency and output length
+                # comparable to non-thinking models under the same max_tokens.
+                create_kwargs["extra_body"] = {"reasoning_effort": "none"}
+
+            response = self.chat_client.chat.completions.create(**create_kwargs).choices[0].message.content
 
             return json.loads(response)
         except Exception as e:
