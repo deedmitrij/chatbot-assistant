@@ -1,5 +1,5 @@
 import pytest
-from tests.vector_db.conftest import get_all_test_cases_from_file
+from tests.rag_evaluation.custom.retrieval.conftest import get_all_test_cases_from_file
 from config import VECTOR_SIMILARITY_THRESHOLD
 
 

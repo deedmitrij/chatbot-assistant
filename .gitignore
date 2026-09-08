@@ -33,3 +33,4 @@ chroma_db/
 
 # Evaluation outputs
 backend/evaluation/results/
+reports/

@@ -22,7 +22,12 @@ def llm_service():
 
 
 def test_get_answer_returns_dict_on_success(llm_service, monkeypatch):
-    """Baseline: valid JSON content still produces the existing dict contract."""
+    """
+    Baseline response-contract test: on success, get_answer returns a dict
+    with confidence as bool and answer as str. This is the single place this
+    contract is asserted for the success path — Generation-quality tests
+    rely on this contract holding rather than re-checking it themselves.
+    """
     monkeypatch.setattr(
         llm_service.chat_client.chat.completions,
         "create",
@@ -31,6 +36,9 @@ def test_get_answer_returns_dict_on_success(llm_service, monkeypatch):
 
     result = llm_service.get_answer("Are you pet friendly?", ["We allow pets."])
 
+    assert isinstance(result, dict)
+    assert isinstance(result["confidence"], bool)
+    assert isinstance(result["answer"], str)
     assert result == {"confidence": True, "answer": "We are pet friendly."}
 
 

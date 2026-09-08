@@ -46,8 +46,8 @@ This application is built as an **AI-powered RAG (Retrieval-Augmented Generation
    - Decides whether to answer directly or route to a human operator.
 
 ### 3️⃣ LLM Layer
-1. **Text Generation**: Powered by **Qwen 2.5 (7B Instruct)** via the Hugging Face Router.
-2. **OpenAI SDK**: Used as a robust interface to interact with remote inference endpoints.
+1. **Text Generation**: The Assistant role and the Judge role (LLM-as-a-Judge evaluation) run as **separate models** — e.g. **Qwen 2.5 (7B)** as Assistant and **Qwen 3 (8B)** as Judge (with "thinking" disabled) — served locally via **Ollama**'s OpenAI-compatible endpoint. Any OpenAI-compatible endpoint works (e.g. the Hugging Face Router); the endpoint, Assistant model, and Judge model are all set independently via environment variables.
+2. **OpenAI SDK**: Used as a provider-neutral interface — the same client code talks to Ollama, Hugging Face, or any other OpenAI-compatible endpoint.
 3. **Role-Play**: Strict system prompt ensure the AI maintains a "Hotel Concierge" persona using corresponding identity.
 
 ### 4️⃣ Human-in-the-Loop (HITL)
@@ -59,9 +59,11 @@ This application is built as an **AI-powered RAG (Retrieval-Augmented Generation
 ## 🕵 Quality Assurance & Testing
 The project includes a comprehensive **Automated Testing Framework** to prevent hallucinations and maintain "Brand Voice":
 
-1. **LLM-as-a-Judge**: evaluates the assistant's performance across multiple categories.
+1. **LLM-as-a-Judge**: a separate Judge model evaluates the Assistant's responses across multiple categories (the Assistant and the Judge are distinct models/roles, not the same model grading itself).
 - **Groundedness (Faithfulness)**: Ensuring answers are strictly based on the provided context.
-- **Negative Constraints**: Verifying the AI admits ignorance when information is missing instead of hallucinating.
+- **Correctness**: Verifying the Assistant reaches the right conclusion when applying a rule from context, not just restating a fact.
+- **Hallucination**: Checking the Assistant doesn't invent details that aren't present in context.
+- **Negative Constraints (Refusal)**: Verifying the AI admits ignorance when information is missing instead of hallucinating.
 - **Relevancy & Completeness**: Checking if all parts of a user query are addressed.
 - **Tone & Persona**: Monitoring "Brand Voice" consistency (politeness).
 
@@ -87,6 +89,7 @@ The project includes **RAGAS (Retrieval-Augmented Generation Assessment)** evalu
 - **Flask** – Web framework and API routing
 - **ChromaDB** – Vector database for similarity search
 - **Hugging Face Hub** – Native inference client for embeddings
+- **Ollama** – Local, OpenAI-compatible inference for the Assistant and Judge models
 - **OpenAI Python SDK** – Client for LLM interactions
 - **Telegram Bot API** – Operator interface
 - **pytest** – Testing engine
@@ -96,7 +99,8 @@ The project includes **RAGAS (Retrieval-Augmented Generation Assessment)** evalu
 
 ## 📋 Prerequisites
 - Python 3.10+
-- **Hugging Face account** with an **Access Token** (Write/Inference permissions)
+- **Hugging Face account** with an **Access Token** (used for embeddings; Write/Inference permissions)
+- **[Ollama](https://ollama.com/)** (or another OpenAI-compatible endpoint): Required to run the Assistant and Judge models locally.
 - **Telegram Account**: To create a bot and receive operator alerts via the Telegram Bot API.
 - **ngrok** (or similar): Required for local development to expose your webhook to Telegram's servers.
   
@@ -129,21 +133,26 @@ Create a `.env` file in the project root and add the following:
 TG_BOT_TOKEN=your_telegram_bot_token
 TG_ADMIN_ID=your_telegram_chat_id
 
-# Hugging Face Configuration
+# Hugging Face Configuration (embeddings only)
 HF_API_TOKEN=your_huggingface_api_key
 HF_BASE_URL=router_huggingface_url
-
-# Model Selection
-CHAT_MODEL=main_llm_model
 EMBEDDING_MODEL=embedding_model
+
+# LLM Chat Configuration (Assistant + Judge) — any OpenAI-compatible endpoint
+LLM_BASE_URL=http://localhost:11434/v1
+LLM_API_KEY=ollama
+CHAT_MODEL=qwen2.5:7b
+JUDGE_MODEL=qwen3:8b
 ```
 📌 **Note:**
 - `TG_BOT_TOKEN`: Replace with the API token you received from @BotFather.
 - `TG_ADMIN_ID`: Replace with your unique Telegram User ID (get it from @userinfobot).
-- `HF_API_TOKEN`: Replace with your Hugging Face Access Token.
+- `HF_API_TOKEN`: Replace with your Hugging Face Access Token (used for embeddings only — not for Assistant/Judge chat inference).
 - `HF_BASE_URL`: Use the standard Hugging Face Inference API URL (https://router.huggingface.co/v1).
-- `CHAT_MODEL`: Specify the model for text generation (e.g., Qwen/Qwen2.5-7B-Instruct).
 - `EMBEDDING_MODEL`: Specify the model for embeddings (e.g., BAAI/bge-small-en-v1.5).
+- `LLM_BASE_URL` / `LLM_API_KEY`: Any OpenAI-compatible chat endpoint for the Assistant and Judge — e.g. a local **Ollama** server (`http://localhost:11434/v1`, API key `ollama`) or the Hugging Face Router.
+- `CHAT_MODEL`: The Assistant model (e.g., `qwen2.5:7b`).
+- `JUDGE_MODEL`: The model used for LLM-as-a-Judge evaluation (e.g., `qwen3:8b`). Optional — defaults to `CHAT_MODEL` if unset, meaning the same model plays both roles.
 
 
 ### **5️⃣ Run the Application**
@@ -158,6 +167,21 @@ To run the automated QA suite:
 ```sh
 pytest .\tests\
 ```
+
+**Generating HTML Reports**
+
+Self-contained, portfolio-friendly HTML reports (via [pytest-html](https://pytest-html.readthedocs.io/)) for the Custom Retrieval and Custom Generation evaluation suites, individually or combined:
+```powershell
+# Custom Retrieval only (fast, deterministic — expands all rows so aggregate metrics are visible without clicking)
+pytest tests\rag_evaluation\custom\retrieval --html=reports\custom_retrieval.html --self-contained-html -o render_collapsed=""
+
+# Custom Generation only (live, calls the configured Assistant/Judge models — requires a running endpoint, e.g. local Ollama)
+pytest tests\rag_evaluation\custom\generation\nondeterministic -m live --html=reports\custom_generation.html --self-contained-html
+
+# Combined Custom AI Evaluation (Retrieval + Generation in one report)
+pytest tests\rag_evaluation\custom -m "live or not live" --html=reports\custom_evaluation.html --self-contained-html -o render_collapsed=""
+```
+Reports are written to `reports/` (gitignored) and open directly in a browser — no external assets needed.
 
 ---
 
@@ -181,13 +205,13 @@ To receive "Low Confidence" alerts and respond to guests from your phone:
      `https://api.telegram.org/bot<YOUR_TOKEN>/setWebhook?url=<YOUR_NGROK_URL>/webhook/telegram`
 
 ### 🤖 Hugging Face Inference API
-To get access to Hugging Face models:
+Used for embeddings only (the Assistant/Judge chat models run separately — see [Configure Environment Variables](#4️⃣-configure-environment-variables)):
 
 1. Visit **https://huggingface.co/**
 2. Sign in or create a **Hugging Face account**.
 3. Go to **Settings → Access Tokens**.
 4. Create a new token with **Make calls to Inference Providers** permission.
-5. Copy the token and add it to your `.env` file as `HF_API_KEY`.
+5. Copy the token and add it to your `.env` file as `HF_API_TOKEN`.
    
 ---
 
