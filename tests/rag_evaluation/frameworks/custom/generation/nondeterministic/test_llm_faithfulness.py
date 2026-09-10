@@ -1,26 +1,26 @@
 import pytest
-from tests.rag_evaluation.custom.generation.nondeterministic.conftest import get_all_test_cases_from_file
+from tests.rag_evaluation.frameworks.custom.generation.nondeterministic.conftest import get_all_test_cases_from_file
 
 pytestmark = pytest.mark.live
 
 
-@pytest.mark.parametrize("test_case", get_all_test_cases_from_file("llm_relevancy.json"), ids=lambda x: x["name"])
-def test_llm_relevancy_and_completeness(llm_as_a_hotel_assistant, llm_as_a_judge, test_case):
+@pytest.mark.parametrize("test_case", get_all_test_cases_from_file("llm_faithfulness.json"), ids=lambda x: x["name"])
+def test_llm_faithfulness(llm_as_a_hotel_assistant, llm_as_a_judge, test_case):
     """
-    Answer Relevancy/Completeness: when a user asks a multi-part question,
-    the answer must address every part, not just the easiest or first one.
-    This matters for a support bot because a partially-answered question
-    often reads as a full answer to the user, who then never follows up on
-    the dropped part.
+    Faithfulness/Groundedness: the answer must be a faithful restatement of a
+    fact that is explicitly present in the retrieved context, with no
+    invention and no derivation required. This is the core anti-hallucination
+    property of a RAG system — an assistant that drifts from its source
+    material erodes guest trust even when it "sounds" plausible.
 
     This test validates:
     1. (deterministic, always) The confidence flag matches
-       `expected_confidence` — both sub-answers are grounded in context in
-       these cases, so it is always true.
+       `expected_confidence` — the objectively correct value for whether the
+       fact is present in context.
     2. (deterministic, only when the case defines `required_facts`) The
-       literal fact(s) tied to each sub-question appear in the answer.
-    3. (semantic, via judge) The answer is complete and coherent as a
-       response to the whole multi-part query, not just a keyword match.
+       literal fact(s) central to this specific case appear in the answer.
+    3. (semantic, via judge) The answer is grounded, on-topic, and phrased
+       appropriately — judged against the case's free-text criteria.
     """
     assistant_response = llm_as_a_hotel_assistant.get_answer(
         query=test_case["query"],
@@ -43,12 +43,12 @@ def test_llm_relevancy_and_completeness(llm_as_a_hotel_assistant, llm_as_a_judge
         )
 
     judge_query = f"""
-    Please evaluate the following interaction for RELEVANCY and COMPLETENESS:
+    Please evaluate the following interaction:
     - USER QUERY: {test_case['query']}
     - ASSISTANT ANSWER: {bot_answer}
     - ASSISTANT CONFIDENCE FLAG: {bot_confidence}
 
-    EVALUATION CRITERIA: {test_case['criteria']}
+    SPECIFIC EVALUATION CRITERIA: {test_case['criteria']}
     """
 
     judge_verdict = llm_as_a_judge.get_answer(
@@ -57,7 +57,7 @@ def test_llm_relevancy_and_completeness(llm_as_a_hotel_assistant, llm_as_a_judge
     )
 
     assert judge_verdict["passed"] is True, (
-        f"Relevancy/Completeness failed: {test_case['name']}\n"
+        f"Test '{test_case['name']}' failed.\n"
         f"Reason: {judge_verdict['reason']}\n"
-        f"Bot's Answer: {bot_answer} (Conf: {bot_confidence})"
+        f"Bot Answered: {bot_answer} (Confidence: {bot_confidence})"
     )

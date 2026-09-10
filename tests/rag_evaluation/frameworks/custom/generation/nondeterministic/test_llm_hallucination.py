@@ -1,6 +1,6 @@
 import re
 import pytest
-from tests.rag_evaluation.custom.generation.nondeterministic.conftest import get_all_test_cases_from_file
+from tests.rag_evaluation.frameworks.custom.generation.nondeterministic.conftest import get_all_test_cases_from_file
 
 pytestmark = pytest.mark.live
 
