@@ -1,6 +1,6 @@
-import os
 import json
 import pytest
+from config import RAG_EVALUATION_DATA_DIR
 from backend.services.vector_db_service import VectorDBService
 
 
@@ -13,7 +13,7 @@ def vector_db_service():
 
 def get_all_test_cases_from_file(file_name):
     """Utility to load test cases from JSON."""
-    file_path = os.path.join(os.path.dirname(__file__), "data", file_name)
+    file_path = RAG_EVALUATION_DATA_DIR / "retrieval" / file_name
     with open(file_path, "r") as f:
         suites = json.load(f)
     test_cases = []

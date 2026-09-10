@@ -36,3 +36,7 @@ JUDGE_MODEL = os.getenv("JUDGE_MODEL", CHAT_MODEL)
 # Knowledge base configuration
 FAQ_PATH = PROJECT_ROOT / "knowledge_base.json"
 OPERATOR_KNOWLEDGE_PATH = PROJECT_ROOT / "operator_knowledge.json"
+
+# Test data configuration
+TESTS_DIR = PROJECT_ROOT / "tests"
+RAG_EVALUATION_DATA_DIR = TESTS_DIR / "rag_evaluation" / "data"
