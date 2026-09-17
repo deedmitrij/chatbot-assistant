@@ -1,20 +1,19 @@
 import json
-
 import pytest
 from openai import AsyncOpenAI
 from ragas.llms import llm_factory
-
 from config import RAG_EVALUATION_DATA_DIR, LLM_BASE_URL, LLM_API_KEY, JUDGE_MODEL
 from backend.services.vector_db_service import VectorDBService
 
+
 # Only the golden files that carry an expected_id/expected_ids (a golden
-# document) are usable here — test_stratification.json's HITL/REJECT zone
-# cases have no golden document and stay Custom-only.
+# document) are usable here — distance_stratification.json's HITL/REJECT
+# zone cases have no golden document and stay Custom-only.
 RETRIEVAL_FILES_WITH_EXPECTED_DOCS = (
-    "test_retrieval.json",
-    "test_top_k.json",
-    "test_metadata.json",
-    "test_retrieval_metrics.json",
+    "query_robustness.json",
+    "top_k_retrieval.json",
+    "metadata_filtering.json",
+    "ranking_metrics.json",
 )
 
 
@@ -30,8 +29,7 @@ def vector_db_service():
 
 @pytest.fixture(scope="session")
 def ragas_judge_llm():
-    """RAGAS evaluator LLM, wired to the same local Ollama Judge model/endpoint
-    as the Custom framework's judge (never CHAT_MODEL, never HF)."""
+    """RAGAS evaluator LLM, wired to the same local Ollama Judge model/endpoint as the Custom framework's judge."""
     client = AsyncOpenAI(api_key=LLM_API_KEY, base_url=LLM_BASE_URL)
     return llm_factory(
         model=JUDGE_MODEL,
@@ -44,7 +42,8 @@ def ragas_judge_llm():
 
 def get_retrieval_ragas_cases():
     """Utility to load RAGAS-eligible retrieval test cases from the shared
-    golden data. Same (dataset, case) tuple shape as Custom's own loader."""
+    golden data. Same (dataset, case) tuple shape as Custom's own loader.
+    Used by ContextRelevance, which needs no reference answer."""
     test_cases = []
     for file_name in RETRIEVAL_FILES_WITH_EXPECTED_DOCS:
         file_path = RAG_EVALUATION_DATA_DIR / "retrieval" / file_name
@@ -55,6 +54,23 @@ def get_retrieval_ragas_cases():
                 if "expected_id" in case or "expected_ids" in case:
                     test_cases.append((suite["dataset"], case))
     return test_cases
+
+
+def get_single_reference_ragas_cases():
+    """Subset of get_retrieval_ragas_cases() whose reference_answer is a
+    single, naturally supported factual target — used by
+    ContextPrecisionWithReference and ContextRecall, which judge each
+    retrieved chunk's support for the *whole* reference answer. Cases marked
+    reference_answer_is_composite (a reference synthesizing facts from more
+    than one expected document) are excluded: no single chunk can support a
+    multi-fact reference in full, so these metrics score them near-zero
+    regardless of retrieval quality. Those cases stay fully covered by
+    Custom's ranking metrics and by ContextRelevance."""
+    return [
+        (dataset, case)
+        for dataset, case in get_retrieval_ragas_cases()
+        if not case.get("evaluation", {}).get("reference_answer_is_composite", False)
+    ]
 
 
 @pytest.fixture

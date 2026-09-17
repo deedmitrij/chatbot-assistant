@@ -163,10 +163,10 @@ def ndcg_at_k(results, k):
     return sum(per_query_ndcg) / len(per_query_ndcg)
 
 
-def test_vector_db_retrieval_metrics(vector_db_service):
+def test_ranking_metrics(vector_db_service):
     """
     Aggregate retrieval quality over a controlled multi-query dataset
-    (test_retrieval_metrics.json), distinct from the other vector_db tests
+    (ranking_metrics.json), distinct from the other vector_db tests
     which each check one query's behavior in isolation.
 
     Computes HitRate@1, HitRate@K, Recall@K, Precision@K, MRR, and NDCG@K
@@ -182,7 +182,7 @@ def test_vector_db_retrieval_metrics(vector_db_service):
     worse without failing the test on normal noise, while still catching a
     real regression.
     """
-    suites = get_all_test_cases_from_file("test_retrieval_metrics.json")
+    suites = get_all_test_cases_from_file("ranking_metrics.json")
     dataset, cases = suites[0][0], [case for _, case in suites]
 
     existing_ids = vector_db_service.collection.get()["ids"]

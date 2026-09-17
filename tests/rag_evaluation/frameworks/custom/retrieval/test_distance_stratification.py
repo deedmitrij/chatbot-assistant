@@ -3,9 +3,9 @@ from tests.rag_evaluation.frameworks.custom.retrieval.conftest import get_all_te
 from config import VECTOR_SIMILARITY_THRESHOLD
 
 
-@pytest.mark.parametrize("test_case", get_all_test_cases_from_file("test_stratification.json"), indirect=True, ids=lambda x: x[1]["name"]
+@pytest.mark.parametrize("test_case", get_all_test_cases_from_file("distance_stratification.json"), indirect=True, ids=lambda x: x[1]["name"]
 )
-def test_vector_db_zone_stratification(vector_db_service, test_case):
+def test_distance_stratification(vector_db_service, test_case):
     """
     Concept: distance/threshold calibration — not a ranking metric, a sanity
     check on the raw distance numbers the confidence gate relies on.
@@ -34,5 +34,6 @@ def test_vector_db_zone_stratification(vector_db_service, test_case):
     assert distance < VECTOR_SIMILARITY_THRESHOLD, \
         f"Distance {distance:.4f} unexpectedly crossed VECTOR_SIMILARITY_THRESHOLD ({VECTOR_SIMILARITY_THRESHOLD})"
 
-    assert test_case["min_dist"] <= distance <= test_case["max_dist"], \
+    custom_evaluation = test_case["evaluation"]["custom"]
+    assert custom_evaluation["min_dist"] <= distance <= custom_evaluation["max_dist"], \
         f"Wrong distance for '{test_case['expected_action']}' action!"

@@ -2,9 +2,9 @@ import pytest
 from tests.rag_evaluation.frameworks.custom.retrieval.conftest import get_all_test_cases_from_file
 
 
-@pytest.mark.parametrize("test_case", get_all_test_cases_from_file("test_top_k.json"), indirect=True, ids=lambda x: x[1]["name"]
+@pytest.mark.parametrize("test_case", get_all_test_cases_from_file("top_k_retrieval.json"), indirect=True, ids=lambda x: x[1]["name"]
 )
-def test_vector_db_top_k(vector_db_service, test_case):
+def test_top_k_retrieval(vector_db_service, test_case):
     """
     Concept: HitRate@K — does at least one relevant document show up
     anywhere in the top-K results, not just at rank 1?
@@ -14,7 +14,7 @@ def test_vector_db_top_k(vector_db_service, test_case):
     top-1 hit. This is HitRate@K, not Recall@K: every case here has exactly
     one relevant document, and with only one relevant document Recall@K
     collapses to the same value as HitRate@K — see
-    test_vector_db_retrieval_metrics.py for a genuine multi-relevant
+    test_ranking_metrics.py for a genuine multi-relevant
     Recall@K case and the aggregate metric computation.
 
     Exists because a correct answer at rank 2 or 3 is still useful context
@@ -33,4 +33,4 @@ def test_vector_db_top_k(vector_db_service, test_case):
     assert expected_id in retrieved_ids, \
        f"Top-k search failure! Expected ID '{expected_id}' not found in top-{top_k}"
 
-    assert distances[0] <= test_case["max_distance"], "Top-1 distance is too high!"
+    assert distances[0] <= test_case["evaluation"]["custom"]["max_distance"], "Top-1 distance is too high!"

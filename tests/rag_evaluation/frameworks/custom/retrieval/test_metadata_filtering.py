@@ -2,8 +2,8 @@ import pytest
 from tests.rag_evaluation.frameworks.custom.retrieval.conftest import get_all_test_cases_from_file
 
 
-@pytest.mark.parametrize("test_case", get_all_test_cases_from_file("test_metadata.json"), indirect=True, ids=lambda x: x[1]["name"])
-def test_vector_db_metadata_filtering(vector_db_service, test_case):
+@pytest.mark.parametrize("test_case", get_all_test_cases_from_file("metadata_filtering.json"), indirect=True, ids=lambda x: x[1]["name"])
+def test_metadata_filtering(vector_db_service, test_case):
     """
     Concept: metadata filtering — a boundary/access-control check, not a
     ranking metric.
@@ -25,4 +25,4 @@ def test_vector_db_metadata_filtering(vector_db_service, test_case):
     distance = results['distances'][0][0]
 
     assert doc_id == test_case['expected_id'], f"Filter failed! Wrong document"
-    assert distance <= test_case["max_distance"], "Distance too high!"
+    assert distance <= test_case["evaluation"]["custom"]["max_distance"], "Distance too high!"

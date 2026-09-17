@@ -2,8 +2,8 @@ import pytest
 from tests.rag_evaluation.frameworks.custom.retrieval.conftest import get_all_test_cases_from_file
 
 
-@pytest.mark.parametrize("test_case", get_all_test_cases_from_file("test_retrieval.json"), indirect=True, ids=lambda x: x[1]["name"])
-def test_vector_db_retrieval(vector_db_service, test_case):
+@pytest.mark.parametrize("test_case", get_all_test_cases_from_file("query_robustness.json"), indirect=True, ids=lambda x: x[1]["name"])
+def test_query_robustness(vector_db_service, test_case):
     """
     Concept: Top-1 accuracy / HitRate@1 — is the single best-ranked result
     the correct document?
@@ -12,7 +12,7 @@ def test_vector_db_retrieval(vector_db_service, test_case):
     (clean / noisy / typo / paraphrase — the paraphrase case shares no
     keywords with its target document), the top result stays correct and
     its distance stays under a ceiling. Each case is checked individually,
-    not averaged into one score — see test_vector_db_retrieval_metrics.py
+    not averaged into one score — see test_ranking_metrics.py
     for that.
 
     Exists to catch regressions where paraphrasing or typos push the
@@ -26,4 +26,4 @@ def test_vector_db_retrieval(vector_db_service, test_case):
     distance = results['distances'][0][0]
 
     assert doc_id == test_case['expected_id'], "Wrong document!"
-    assert distance <= test_case["max_distance"], "Distance too high!"
+    assert distance <= test_case["evaluation"]["custom"]["max_distance"], "Distance too high!"
