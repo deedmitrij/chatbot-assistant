@@ -21,7 +21,7 @@ CHROMA_PORT = int(os.getenv("CHROMA_PORT", "8000")) if os.getenv("CHROMA_PORT") 
 TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN")
 TG_ADMIN_ID = os.getenv("TG_ADMIN_ID")
 
-# HuggingFace configuration (used for embeddings and RAGAS evaluation)
+# HuggingFace configuration (used for embeddings and evaluation)
 HF_API_TOKEN = os.getenv("HF_API_TOKEN")
 HF_BASE_URL = os.getenv("HF_BASE_URL")
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
@@ -36,3 +36,7 @@ JUDGE_MODEL = os.getenv("JUDGE_MODEL", CHAT_MODEL)
 # Knowledge base configuration
 FAQ_PATH = PROJECT_ROOT / "knowledge_base.json"
 OPERATOR_KNOWLEDGE_PATH = PROJECT_ROOT / "operator_knowledge.json"
+
+# Test data configuration
+TESTS_DIR = PROJECT_ROOT / "tests"
+RAG_EVALUATION_DATA_DIR = TESTS_DIR / "rag_evaluation" / "data"

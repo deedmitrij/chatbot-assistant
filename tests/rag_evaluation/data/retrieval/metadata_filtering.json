@@ -1,0 +1,96 @@
+[
+  {
+    "id": "metadata-precision",
+    "dataset": {
+      "documents": [
+        "Guest breakfast is served from 7:00 to 11:00 AM in the main hall.",
+        "Guests can use the fitness center from 6 AM to 11 PM.",
+        "Guests have access to the outdoor pool from 8 AM to 8 PM.",
+        "Guest Wi-Fi is complimentary throughout the hotel.",
+        "Guest check-out time is 11:00 AM.",
+        "Staff breakfast is served from 6:00 to 7:00 AM in the kitchen area.",
+        "Staff may use the fitness center before 6 AM or after 11 PM.",
+        "Staff pool access is limited to Mondays during off-peak hours.",
+        "Staff have a separate internal Wi-Fi network for shift scheduling.",
+        "Staff shifts begin at 6:00 AM and end at either 2:00 PM or 10:00 PM.",
+        "Management breakfast meetings are held from 7:30 to 8:00 AM in the office.",
+        "Managers submit daily reports to the general manager by 9:00 PM."
+      ],
+      "ids": [
+        "guest_breakfast", "guest_gym", "guest_pool", "guest_wifi", "guest_checkout",
+        "staff_breakfast", "staff_gym", "staff_pool", "staff_wifi", "staff_shift",
+        "manager_breakfast", "manager_reports"
+      ],
+      "metadatas": [
+        {"role": "guest", "type": "food"},
+        {"role": "guest", "type": "amenity"},
+        {"role": "guest", "type": "amenity"},
+        {"role": "guest", "type": "tech"},
+        {"role": "guest", "type": "policy"},
+        {"role": "staff", "type": "food"},
+        {"role": "staff", "type": "amenity"},
+        {"role": "staff", "type": "amenity"},
+        {"role": "staff", "type": "tech"},
+        {"role": "staff", "type": "policy"},
+        {"role": "manager", "type": "food"},
+        {"role": "manager", "type": "policy"}
+      ]
+    },
+    "cases": [
+      {
+        "name": "Filter for Guest Role",
+        "query": "when is breakfast served?",
+        "filter": {"role": "guest"},
+        "expected_id": "guest_breakfast",
+        "n_results": 2,
+        "reference_answer": "Guest breakfast is served from 7:00 to 11:00 AM in the main hall.",
+        "evaluation": {
+          "custom": {
+            "max_distance": 0.6
+          },
+          "ragas": {
+            "context_relevance": {"min_score": 0.90},
+            "context_precision_with_reference": {"min_score": 0.90},
+            "context_recall": {"min_score": 0.90}
+          }
+        }
+      },
+      {
+        "name": "Filter for Staff Role",
+        "query": "when is breakfast served?",
+        "filter": {"role": "staff"},
+        "expected_id": "staff_breakfast",
+        "n_results": 2,
+        "reference_answer": "Staff breakfast is served from 6:00 to 7:00 AM in the kitchen area.",
+        "evaluation": {
+          "custom": {
+            "max_distance": 0.5
+          },
+          "ragas": {
+            "context_relevance": {"min_score": 0.90},
+            "context_precision_with_reference": {"min_score": 0.90},
+            "context_recall": {"min_score": 0.90}
+          }
+        }
+      },
+      {
+        "name": "Semantic Discrimination Without Filter",
+        "query": "When do staff members eat breakfast in the kitchen?",
+        "filter": null,
+        "expected_id": "staff_breakfast",
+        "n_results": 3,
+        "reference_answer": "Staff breakfast is served from 6:00 to 7:00 AM in the kitchen area.",
+        "evaluation": {
+          "custom": {
+            "max_distance": 0.35
+          },
+          "ragas": {
+            "context_relevance": {"min_score": 0.90},
+            "context_precision_with_reference": {"min_score": 0.90},
+            "context_recall": {"min_score": 0.90}
+          }
+        }
+      }
+    ]
+  }
+]

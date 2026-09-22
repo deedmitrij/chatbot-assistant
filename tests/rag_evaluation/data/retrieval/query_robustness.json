@@ -1,0 +1,113 @@
+[
+  {
+    "id": "pool-test-suite",
+    "dataset": {
+      "documents": [
+        "The hotel's main pool is open from 8 AM to 10 PM.",
+        "The hotel also has a separate outdoor leisure pool, open from 9 AM to 7 PM.",
+        "The pool water temperature is maintained at 28°C year-round.",
+        "The pool will be closed for maintenance every Tuesday morning.",
+        "The fitness center is open from 6 AM to 11 PM.",
+        "The sauna is open from 9 AM to 9 PM.",
+        "The spa accepts appointments from 10 AM to 6 PM.",
+        "Breakfast is served in the lobby.",
+        "Check-out time is 11 AM.",
+        "Self-parking costs $20 per night."
+      ],
+      "ids": [
+        "doc_pool",
+        "pool_outdoor_hours",
+        "pool_temperature",
+        "pool_maintenance",
+        "gym_hours",
+        "sauna_hours",
+        "spa_hours",
+        "doc_bask",
+        "doc_out",
+        "parking_fee"
+      ],
+      "metadatas": [
+        {"type": "amenities"},
+        {"type": "amenities"},
+        {"type": "amenities"},
+        {"type": "amenities"},
+        {"type": "amenities"},
+        {"type": "amenities"},
+        {"type": "amenities"},
+        {"type": "food"},
+        {"type": "policy"},
+        {"type": "policy"}
+      ]
+    },
+    "cases": [
+      {
+        "name": "Clean Query",
+        "query": "pool hours",
+        "expected_id": "doc_pool",
+        "n_results": 3,
+        "reference_answer": "The hotel's main pool is open from 8 AM to 10 PM.",
+        "evaluation": {
+          "custom": {
+            "max_distance": 0.55
+          },
+          "ragas": {
+            "context_relevance": {"min_score": 0.90},
+            "context_precision_with_reference": {"min_score": 0.90},
+            "context_recall": {"min_score": 0.90}
+          }
+        }
+      },
+      {
+        "name": "Noisy Query",
+        "query": "Hello! I would like to know until what time the pool is open today, please.",
+        "expected_id": "doc_pool",
+        "n_results": 3,
+        "reference_answer": "The hotel's main pool is open from 8 AM to 10 PM.",
+        "evaluation": {
+          "custom": {
+            "max_distance": 0.65
+          },
+          "ragas": {
+            "context_relevance": {"min_score": 0.90},
+            "context_precision_with_reference": {"min_score": 0.90},
+            "context_recall": {"min_score": 0.90}
+          }
+        }
+      },
+      {
+        "name": "Typo Query",
+        "query": "pool opning tims",
+        "expected_id": "doc_pool",
+        "n_results": 3,
+        "reference_answer": "The hotel's main pool is open from 8 AM to 10 PM.",
+        "evaluation": {
+          "custom": {
+            "max_distance": 0.75
+          },
+          "ragas": {
+            "context_relevance": {"min_score": 0.90},
+            "context_precision_with_reference": {"min_score": 0.30},
+            "context_recall": {"min_score": 0.90}
+          }
+        }
+      },
+      {
+        "name": "Paraphrase Query",
+        "query": "Until what hour can guests go for an evening swim?",
+        "expected_id": "doc_pool",
+        "n_results": 3,
+        "reference_answer": "The hotel's main pool is open from 8 AM to 10 PM.",
+        "evaluation": {
+          "custom": {
+            "max_distance": 0.55
+          },
+          "ragas": {
+            "context_relevance": {"min_score": 0.90},
+            "context_precision_with_reference": {"min_score": 0.90},
+            "context_recall": {"min_score": 0.90}
+          }
+        }
+      }
+    ]
+  }
+]

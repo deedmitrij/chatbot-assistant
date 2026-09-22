@@ -1,0 +1,97 @@
+[
+  {
+    "id": "pool-retrieval-test",
+    "dataset": {
+      "documents": [
+        "The outdoor infinity pool is open from 8 AM to 10 PM.",
+        "Children under 12 must be supervised in any pool area.",
+        "Pool towels are available at the spa reception.",
+        "The indoor heated pool is open 24/7 for all guests.",
+        "The sauna is located next to the indoor pool and is not recommended for children under 16 due to the heat.",
+        "The children's pool is open from 10 AM to 6 PM, supervised by lifeguards.",
+        "The adults-only pool is open from 6 AM to 8 PM.",
+        "The poolside bar serves drinks and snacks from 11 AM to 6 PM.",
+        "The spa also offers a separate private sauna suite for adults, available by appointment only.",
+        "The main restaurant is open for dinner from 6 PM to 10 PM."
+      ],
+      "ids": [
+        "pool_outdoor", "pool_child", "pool_towels", "pool_indoor", "pool_sauna",
+        "pool_kids", "pool_adult", "pool_bar", "spa_sauna", "restaurant_dinner"
+      ],
+      "metadatas": [
+        {"type": "pool"}, {"type": "safety"}, {"type": "service"}, {"type": "pool"}, {"type": "amenity"},
+        {"type": "pool"}, {"type": "pool"}, {"type": "service"}, {"type": "amenity"}, {"type": "dining"}
+      ]
+    },
+    "cases": [
+      {
+        "name": "HitRate@K Check: Indoor Pool",
+        "query": "Is there a pool I can use at night?",
+        "expected_id": "pool_indoor",
+        "n_results": 2,
+        "reference_answer": "Yes, the indoor heated pool is open 24/7.",
+        "evaluation": {
+          "custom": {
+            "max_distance": 1.0
+          },
+          "ragas": {
+            "context_relevance": {"min_score": 0.90},
+            "context_precision_with_reference": {"min_score": 0.50},
+            "context_recall": {"min_score": 0.50}
+          }
+        }
+      },
+      {
+        "name": "HitRate@K Check: Night Swimming (24/7)",
+        "query": "I want to swim at 3 AM. Is it possible?",
+        "expected_id": "pool_indoor",
+        "n_results": 2,
+        "reference_answer": "Yes, the indoor pool is open 24 hours a day.",
+        "evaluation": {
+          "custom": {
+            "max_distance": 1.45
+          },
+          "ragas": {
+            "context_relevance": {"min_score": 0.50},
+            "context_precision_with_reference": {"min_score": 0.50},
+            "context_recall": {"min_score": 0.50}
+          }
+        }
+      },
+      {
+        "name": "HitRate@K Check: Synonym for Towels",
+        "query": "Do you provide linens for the beach or pool?",
+        "expected_id": "pool_towels",
+        "n_results": 2,
+        "reference_answer": "Yes, pool towels are available at the spa reception.",
+        "evaluation": {
+          "custom": {
+            "max_distance": 1.1
+          },
+          "ragas": {
+            "context_relevance": {"min_score": 0.45},
+            "context_precision_with_reference": {"min_score": 0.90},
+            "context_recall": {"min_score": 0.90}
+          }
+        }
+      },
+      {
+        "name": "HitRate@K Check: Safety Overlap",
+        "query": "Is the sauna safe for kids?",
+        "expected_id": "pool_sauna",
+        "n_results": 2,
+        "reference_answer": "The sauna is not recommended for children under 16 due to the heat.",
+        "evaluation": {
+          "custom": {
+            "max_distance": 1.1
+          },
+          "ragas": {
+            "context_relevance": {"min_score": 0.90},
+            "context_precision_with_reference": {"min_score": 0.90},
+            "context_recall": {"min_score": 0.90}
+          }
+        }
+      }
+    ]
+  }
+]

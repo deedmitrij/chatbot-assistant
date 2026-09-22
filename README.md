@@ -173,13 +173,13 @@ pytest .\tests\
 Self-contained, portfolio-friendly HTML reports (via [pytest-html](https://pytest-html.readthedocs.io/)) for the Custom Retrieval and Custom Generation evaluation suites, individually or combined:
 ```powershell
 # Custom Retrieval only (fast, deterministic — expands all rows so aggregate metrics are visible without clicking)
-pytest tests\rag_evaluation\custom\retrieval --html=reports\custom_retrieval.html --self-contained-html -o render_collapsed=""
+pytest tests\rag_evaluation\frameworks\custom\retrieval --html=reports\custom_retrieval.html --self-contained-html -o render_collapsed=""
 
 # Custom Generation only (live, calls the configured Assistant/Judge models — requires a running endpoint, e.g. local Ollama)
-pytest tests\rag_evaluation\custom\generation\nondeterministic -m live --html=reports\custom_generation.html --self-contained-html
+pytest tests\rag_evaluation\frameworks\custom\generation\nondeterministic -m live --html=reports\custom_generation.html --self-contained-html
 
 # Combined Custom AI Evaluation (Retrieval + Generation in one report)
-pytest tests\rag_evaluation\custom -m "live or not live" --html=reports\custom_evaluation.html --self-contained-html -o render_collapsed=""
+pytest tests\rag_evaluation\frameworks\custom -m "live or not live" --html=reports\custom_evaluation.html --self-contained-html -o render_collapsed=""
 ```
 Reports are written to `reports/` (gitignored) and open directly in a browser — no external assets needed.
 

@@ -1,0 +1,157 @@
+[
+  {
+    "id": "retrieval-metrics-dataset",
+    "dataset": {
+      "documents": [
+        "The indoor heated pool is open 24 hours a day for all guests.",
+        "Our outdoor pool overlooks the garden and is open from 7 AM to 9 PM.",
+        "The fitness center is open 24/7 and includes free weights and cardio machines.",
+        "Room service is available around the clock, including late-night snacks.",
+        "Breakfast buffet is served every morning from 6:30 AM to 10:00 AM.",
+        "High-speed Wi-Fi is complimentary throughout the hotel, including all guest rooms.",
+        "Standard check-in begins at 3:00 PM and check-out is by 12:00 PM noon.",
+        "Our on-site spa offers massages and facials by appointment only.",
+        "Self-parking, the hotel's standard parking option, is available on-site for a nightly fee of $20.",
+        "Dinner service begins at 6:00 PM and ends at 10:00 PM in the main restaurant.",
+        "For Wi-Fi connectivity issues, contact the front desk for technical support.",
+        "Guests arriving after midnight should notify the front desk in advance for late check-in.",
+        "Guests who prefer valet parking can upgrade for an additional $10 on top of the standard self-parking fee.",
+        "Spa gift vouchers can be purchased at the front desk for any treatment."
+      ],
+      "ids": [
+        "pool_indoor",
+        "pool_outdoor",
+        "gym_247",
+        "room_service_247",
+        "dining_breakfast",
+        "tech_wifi",
+        "policy_checkin",
+        "wellness_spa",
+        "policy_parking",
+        "dining_dinner",
+        "tech_wifi_support",
+        "policy_late_checkin",
+        "policy_valet_parking",
+        "wellness_spa_voucher"
+      ],
+      "metadatas": [
+        {"type": "amenity"},
+        {"type": "amenity"},
+        {"type": "amenity"},
+        {"type": "dining"},
+        {"type": "dining"},
+        {"type": "tech"},
+        {"type": "policy"},
+        {"type": "amenity"},
+        {"type": "policy"},
+        {"type": "dining"},
+        {"type": "tech"},
+        {"type": "policy"},
+        {"type": "policy"},
+        {"type": "amenity"}
+      ]
+    },
+    "cases": [
+      {
+        "name": "single relevant: breakfast hours",
+        "query": "What time does breakfast start?",
+        "expected_ids": ["dining_breakfast"],
+        "relevance_grades": {"dining_breakfast": 3},
+        "reference_answer": "Breakfast buffet is served every morning from 6:30 AM to 10:00 AM.",
+        "evaluation": {
+          "ragas": {
+            "context_relevance": {"min_score": 0.90},
+            "context_precision_with_reference": {"min_score": 0.90},
+            "context_recall": {"min_score": 0.90}
+          }
+        }
+      },
+      {
+        "name": "single relevant: wifi cost",
+        "query": "Do I have to pay for Wi-Fi?",
+        "expected_ids": ["tech_wifi"],
+        "relevance_grades": {"tech_wifi": 3},
+        "reference_answer": "No, Wi-Fi is complimentary throughout the hotel.",
+        "evaluation": {
+          "ragas": {
+            "context_relevance": {"min_score": 0.90},
+            "context_precision_with_reference": {"min_score": 0.90},
+            "context_recall": {"min_score": 0.90}
+          }
+        }
+      },
+      {
+        "name": "single relevant: check-in time",
+        "query": "What time is check-in?",
+        "expected_ids": ["policy_checkin"],
+        "relevance_grades": {"policy_checkin": 3},
+        "reference_answer": "Check-in begins at 3:00 PM.",
+        "evaluation": {
+          "ragas": {
+            "context_relevance": {"min_score": 0.90},
+            "context_precision_with_reference": {"min_score": 0.90},
+            "context_recall": {"min_score": 0.90}
+          }
+        }
+      },
+      {
+        "name": "single relevant: parking cost",
+        "query": "How much does parking cost?",
+        "expected_ids": ["policy_parking"],
+        "relevance_grades": {"policy_parking": 3},
+        "reference_answer": "Self-parking costs $20 per night.",
+        "evaluation": {
+          "ragas": {
+            "context_relevance": {"min_score": 0.90},
+            "context_precision_with_reference": {"min_score": 0.90},
+            "context_recall": {"min_score": 0.90}
+          }
+        }
+      },
+      {
+        "name": "single relevant: spa booking",
+        "query": "Can I book a massage?",
+        "expected_ids": ["wellness_spa"],
+        "relevance_grades": {"wellness_spa": 3},
+        "reference_answer": "Yes, massages can be booked by appointment at the spa.",
+        "evaluation": {
+          "ragas": {
+            "context_relevance": {"min_score": 0.70},
+            "context_precision_with_reference": {"min_score": 0.90},
+            "context_recall": {"min_score": 0.90}
+          }
+        }
+      },
+      {
+        "name": "multi relevant: anytime services",
+        "query": "What hotel services are available at any hour, day or night?",
+        "expected_ids": ["gym_247", "room_service_247"],
+        "relevance_grades": {
+          "gym_247": 3,
+          "room_service_247": 3,
+          "pool_indoor": 1
+        },
+        "reference_answer": "The fitness center and room service are both available 24 hours a day.",
+        "evaluation": {
+          "reference_answer_is_composite": true,
+          "ragas": {
+            "context_relevance": {"min_score": 0.90}
+          }
+        }
+      },
+      {
+        "name": "multi relevant: pool options",
+        "query": "What pool options do you have?",
+        "expected_ids": ["pool_indoor", "pool_outdoor"],
+        "relevance_grades": {"pool_indoor": 3, "pool_outdoor": 3},
+        "reference_answer": "We have both an indoor heated pool open 24 hours a day and an outdoor pool open from 7 AM to 9 PM.",
+        "evaluation": {
+          "reference_answer_is_composite": true,
+          "ragas": {
+            "context_relevance": {"min_score": 0.90}
+          }
+        }
+      }
+    ]
+  }
+]

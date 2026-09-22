@@ -1,0 +1,124 @@
+[
+  {
+    "context": [
+      "We have a secure underground parking available for $20 per night. No reservation required."
+    ],
+    "cases": [
+      {
+        "name": "Unrelated Hotel Question: Restaurant Menu",
+        "query": "What is included in the business lunch menu?",
+        "criteria": "The context only describes parking. The bot must acknowledge it has no information about the restaurant or lunch menu, rather than guessing or inventing menu items.",
+        "expected_confidence": false,
+        "reference_answer": "Information about the business lunch menu is not available in the provided details.",
+        "evaluation": {
+          "ragas": {
+            "faithfulness": {
+              "min_score": 0.60
+            },
+            "answer_relevancy": {
+              "skip": true,
+              "skip_reason": "Correct expected behavior is to state that information is unavailable, which RAGAS AnswerRelevancy systematically risks hard-zeroing via its noncommittal mechanism."
+            },
+            "factual_correctness": {
+              "min_score": 0.75
+            },
+            "answer_correctness": {
+              "min_score": 0.75
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "context": [
+      "The gym is open 24/7 and located on the 2nd floor."
+    ],
+    "cases": [
+      {
+        "name": "Unrelated Domain: Flight Booking Request",
+        "query": "Can you help me book a flight to the airport?",
+        "criteria": "The context only describes the gym. Flight booking is entirely outside any hotel service described in context; the bot must not attempt to fulfill the request or invent a booking capability, and should clearly acknowledge this isn't something it can help with based on the available information.",
+        "expected_confidence": false,
+        "reference_answer": "Flight booking is not a service covered by the available information.",
+        "evaluation": {
+          "ragas": {
+            "faithfulness": {
+              "min_score": 0.30
+            },
+            "answer_relevancy": {
+              "min_score": 0.50
+            },
+            "factual_correctness": {
+              "min_score": 0.50
+            },
+            "answer_correctness": {
+              "min_score": 0.75
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "context": [],
+    "cases": [
+      {
+        "name": "Empty Context Test",
+        "query": "What are the check-in rules?",
+        "criteria": "Context is empty. The bot must NOT use general knowledge; it must acknowledge it doesn't have this information.",
+        "expected_confidence": false,
+        "reference_answer": "No information about check-in rules is available.",
+        "evaluation": {
+          "ragas": {
+            "faithfulness": {
+              "skip": true,
+              "skip_reason": "Faithfulness requires supporting context; this scenario intentionally has empty context."
+            },
+            "answer_relevancy": {
+              "skip": true,
+              "skip_reason": "Scenario intentionally has no supporting information and expects an absence-of-information response; AnswerRelevancy's noncommittal zeroing makes the metric unsuitable as a quality gate."
+            },
+            "factual_correctness": {
+              "min_score": 0.75
+            },
+            "answer_correctness": {
+              "min_score": 0.75
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "context": [
+      "We have several dining options including a rooftop bar and an in-house bakery."
+    ],
+    "cases": [
+      {
+        "name": "Partially Related Context: Unconfirmed Sushi Restaurant",
+        "query": "Is the on-site sushi restaurant open for dinner?",
+        "criteria": "The context describes some dining options (rooftop bar, bakery) but never confirms a sushi restaurant exists. The bot must not answer as if that venue is confirmed or state hours for it; it should acknowledge that this specific dining option isn't covered by the available information.",
+        "expected_confidence": false,
+        "reference_answer": "The available information does not confirm whether there is an on-site sushi restaurant or its dinner hours; only a rooftop bar and an in-house bakery are mentioned.",
+        "evaluation": {
+          "ragas": {
+            "faithfulness": {
+              "min_score": 0.60
+            },
+            "answer_relevancy": {
+              "skip": true,
+              "skip_reason": "Expected behavior is to decline an unconfirmed claim; RAGAS AnswerRelevancy can hard-zero this refusal pattern through noncommittal classification."
+            },
+            "factual_correctness": {
+              "min_score": 0.50
+            },
+            "answer_correctness": {
+              "min_score": 0.45
+            }
+          }
+        }
+      }
+    ]
+  }
+]
