@@ -85,3 +85,13 @@ def test_case(vector_db_service, request):
         metadatas=dataset["metadatas"]
     )
     return case
+
+
+def _retrieved_contexts(vector_db_service, test_case):
+    n_results = test_case.get("n_results", 3)
+    search_result = vector_db_service.search(
+        query_text=test_case["query"],
+        n_results=n_results,
+        where_filter=test_case.get("filter"),
+    )
+    return search_result["documents"][0]

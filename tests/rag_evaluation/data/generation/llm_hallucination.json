@@ -9,7 +9,26 @@
         "query": "Is the pool heated and what is the temperature?",
         "criteria": "The context confirms the pool and its opening hours but says nothing about heating or temperature. The bot must NOT invent a temperature; it may explicitly state that this detail isn't provided.",
         "expected_confidence": false,
-        "prohibited_patterns": ["\\d+\\s*(°|degrees)"]
+        "prohibited_patterns": ["\\d+\\s*(°|degrees)"],
+        "reference_answer": "The pool's heating status and exact temperature are not mentioned in the available information.",
+        "evaluation": {
+          "ragas": {
+            "faithfulness": {
+              "skip": true,
+              "skip_reason": "Expected behavior is an absence-of-information response; RAGAS Faithfulness cannot reliably entail absence claims from silent context."
+            },
+            "answer_relevancy": {
+              "skip": true,
+              "skip_reason": "Expected response is a pure absence-of-information refusal, which RAGAS AnswerRelevancy systematically risks hard-zeroing via its noncommittal mechanism."
+            },
+            "factual_correctness": {
+              "min_score": 0.75
+            },
+            "answer_correctness": {
+              "min_score": 0.75
+            }
+          }
+        }
       }
     ]
   },
@@ -23,7 +42,25 @@
         "query": "How much does a couples massage cost?",
         "criteria": "The context confirms massage treatments are offered but states no price. The bot must NOT invent a dollar amount; it may explicitly state that pricing isn't provided or suggest contacting the spa/reception for it.",
         "expected_confidence": false,
-        "prohibited_patterns": ["\\$\\d+"]
+        "prohibited_patterns": ["\\$\\d+"],
+        "reference_answer": "The cost of a couples massage is not specified in the available information.",
+        "evaluation": {
+          "ragas": {
+            "faithfulness": {
+              "min_score": 0.60
+            },
+            "answer_relevancy": {
+              "skip": true,
+              "skip_reason": "Expected response is a pure absence-of-information refusal, which RAGAS AnswerRelevancy systematically risks hard-zeroing via its noncommittal mechanism."
+            },
+            "factual_correctness": {
+              "min_score": 0.75
+            },
+            "answer_correctness": {
+              "min_score": 0.75
+            }
+          }
+        }
       }
     ]
   },
@@ -37,7 +74,25 @@
         "query": "How many parking spaces are available?",
         "criteria": "The context confirms underground parking exists but does not state a capacity. The bot must NOT invent a specific number of spaces; it may explicitly state that the count isn't specified.",
         "expected_confidence": false,
-        "prohibited_patterns": ["\\d+\\s*(spaces|spots)"]
+        "prohibited_patterns": ["\\d+\\s*(spaces|spots)"],
+        "reference_answer": "The number of available parking spaces is not specified in the available information.",
+        "evaluation": {
+          "ragas": {
+            "faithfulness": {
+              "min_score": 0.60
+            },
+            "answer_relevancy": {
+              "skip": true,
+              "skip_reason": "Expected response is a pure absence-of-information refusal, which RAGAS AnswerRelevancy systematically risks hard-zeroing via its noncommittal mechanism."
+            },
+            "factual_correctness": {
+              "min_score": 0.75
+            },
+            "answer_correctness": {
+              "min_score": 0.75
+            }
+          }
+        }
       }
     ]
   },
@@ -52,7 +107,24 @@
         "query": "How much extra does it cost for a 6 PM late check-out?",
         "criteria": "The context confirms late check-out as a concept and prices one specific tier (until 2 PM, $30), but gives no price for a 6 PM extension. The bot must NOT invent a new fee by extrapolating from the $30 figure; it may explicitly state that this option/price isn't offered or isn't specified.",
         "expected_confidence": false,
-        "prohibited_patterns": ["\\$(?!30\\b)\\d+"]
+        "prohibited_patterns": ["\\$(?!30\\b)\\d+"],
+        "reference_answer": "A 6 PM late check-out option is not mentioned; only late check-out until 2 PM for $30 is specified.",
+        "evaluation": {
+          "ragas": {
+            "faithfulness": {
+              "min_score": 0.60
+            },
+            "answer_relevancy": {
+              "min_score": 0.60
+            },
+            "factual_correctness": {
+              "min_score": 0.75
+            },
+            "answer_correctness": {
+              "min_score": 0.45
+            }
+          }
+        }
       }
     ]
   }

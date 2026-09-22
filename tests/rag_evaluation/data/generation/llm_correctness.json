@@ -11,13 +11,47 @@
         "query": "Can I stay until 1 PM for free?",
         "criteria": "Bot must say NO to 'free' and mention the $30 charge, correctly applying the late check-out rule rather than just restating it.",
         "expected_confidence": true,
-        "required_facts": ["$30"]
+        "required_facts": ["$30"],
+        "reference_answer": "No, staying until 1 PM is not free. Late check-out until 2 PM is available for a $30 fee.",
+        "evaluation": {
+          "ragas": {
+            "faithfulness": {
+              "min_score": 0.90
+            },
+            "answer_relevancy": {
+              "min_score": 0.60
+            },
+            "factual_correctness": {
+              "min_score": 0.60
+            },
+            "answer_correctness": {
+              "min_score": 0.75
+            }
+          }
+        }
       },
       {
         "name": "Smoking policy check",
         "query": "Is it okay if I smoke on the balcony?",
         "criteria": "Bot must strictly deny smoking, correctly applying the 'strictly prohibited in all rooms' rule to the balcony question.",
-        "expected_confidence": true
+        "expected_confidence": true,
+        "reference_answer": "No, smoking is strictly prohibited in all rooms, including the balcony.",
+        "evaluation": {
+          "ragas": {
+            "faithfulness": {
+              "min_score": 0.30
+            },
+            "answer_relevancy": {
+              "min_score": 0.50
+            },
+            "factual_correctness": {
+              "min_score": 0.30
+            },
+            "answer_correctness": {
+              "min_score": 0.45
+            }
+          }
+        }
       }
     ]
   },
@@ -32,7 +66,24 @@
         "query": "What is the cheapest way to get to the airport?",
         "criteria": "The bot must compare the prices ($15 vs $40) and explicitly recommend the shuttle as the cheapest option, correctly deriving the conclusion rather than just listing both options.",
         "expected_confidence": true,
-        "required_facts": ["$15", "$40", "shuttle"]
+        "required_facts": ["$15", "$40", "shuttle"],
+        "reference_answer": "The shuttle is the cheapest option at $15, compared to a taxi at $40.",
+        "evaluation": {
+          "ragas": {
+            "faithfulness": {
+              "min_score": 0.90
+            },
+            "answer_relevancy": {
+              "min_score": 0.75
+            },
+            "factual_correctness": {
+              "min_score": 0.60
+            },
+            "answer_correctness": {
+              "min_score": 0.60
+            }
+          }
+        }
       }
     ]
   },
@@ -46,7 +97,25 @@
         "name": "Rule exclusion: pet not on allowed list",
         "query": "Can I bring my pet parrot?",
         "criteria": "A parrot is not a dog or cat, so it is not on the allowed-pets list. The bot must correctly deny the request by logical exclusion from the stated rule, not just because parrots aren't mentioned.",
-        "expected_confidence": true
+        "expected_confidence": true,
+        "reference_answer": "No, parrots are not allowed; only small dogs and cats under 15 lbs are permitted pets.",
+        "evaluation": {
+          "ragas": {
+            "faithfulness": {
+              "min_score": 0.90
+            },
+            "answer_relevancy": {
+              "skip": true,
+              "skip_reason": "Targeted diagnostic confirmed a RAGAS noncommittal false positive: semantic similarity was high (0.836) but the direct denial was hard-zeroed by the noncommittal classifier."
+            },
+            "factual_correctness": {
+              "min_score": 0.50
+            },
+            "answer_correctness": {
+              "min_score": 0.45
+            }
+          }
+        }
       }
     ]
   }

@@ -21,7 +21,7 @@ CHROMA_PORT = int(os.getenv("CHROMA_PORT", "8000")) if os.getenv("CHROMA_PORT") 
 TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN")
 TG_ADMIN_ID = os.getenv("TG_ADMIN_ID")
 
-# HuggingFace configuration (used for embeddings and RAGAS evaluation)
+# HuggingFace configuration (used for embeddings and evaluation)
 HF_API_TOKEN = os.getenv("HF_API_TOKEN")
 HF_BASE_URL = os.getenv("HF_BASE_URL")
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")

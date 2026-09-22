@@ -9,7 +9,24 @@
         "query": "What are the pool opening hours?",
         "criteria": "Bot must state the pool hours exactly as given in context: 10 AM to 6 PM.",
         "expected_confidence": true,
-        "required_facts": ["10 AM", "6 PM"]
+        "required_facts": ["10 AM", "6 PM"],
+        "reference_answer": "Our rooftop pool is open from 10 AM to 6 PM.",
+        "evaluation": {
+          "ragas": {
+            "faithfulness": {
+              "min_score": 0.90
+            },
+            "answer_relevancy": {
+              "min_score": 0.75
+            },
+            "factual_correctness": {
+              "min_score": 0.50
+            },
+            "answer_correctness": {
+              "min_score": 0.60
+            }
+          }
+        }
       }
     ]
   },
@@ -24,14 +41,48 @@
         "query": "What is the Wi-Fi password?",
         "criteria": "Bot must state the exact password 'HotelGuest2024' as given in context, with no paraphrasing or omission.",
         "expected_confidence": true,
-        "required_facts": ["HotelGuest2024"]
+        "required_facts": ["HotelGuest2024"],
+        "reference_answer": "The Wi-Fi password is HotelGuest2024.",
+        "evaluation": {
+          "ragas": {
+            "faithfulness": {
+              "min_score": 0.90
+            },
+            "answer_relevancy": {
+              "min_score": 0.75
+            },
+            "factual_correctness": {
+              "min_score": 0.30
+            },
+            "answer_correctness": {
+              "min_score": 0.75
+            }
+          }
+        }
       },
       {
         "name": "Check-in time lookup",
         "query": "What time can I check in?",
         "criteria": "Bot must state check-in is at 2 PM, exactly as stated in context.",
         "expected_confidence": true,
-        "required_facts": ["2 PM"]
+        "required_facts": ["2 PM"],
+        "reference_answer": "Check-in time is 2 PM.",
+        "evaluation": {
+          "ragas": {
+            "faithfulness": {
+              "min_score": 0.90
+            },
+            "answer_relevancy": {
+              "min_score": 0.75
+            },
+            "factual_correctness": {
+              "min_score": 0.75
+            },
+            "answer_correctness": {
+              "min_score": 0.75
+            }
+          }
+        }
       }
     ]
   }
