@@ -2,8 +2,15 @@ import json
 import pytest
 from openai import AsyncOpenAI
 from ragas.llms import llm_factory
-from config import RAG_EVALUATION_DATA_DIR, LLM_BASE_URL, LLM_API_KEY, JUDGE_MODEL
+from config import PROJECT_ROOT, RAG_EVALUATION_DATA_DIR, LLM_BASE_URL, LLM_API_KEY, JUDGE_MODEL
 from backend.services.vector_db_service import VectorDBService
+from tests.rag_evaluation.reporting.recorder import Recorder
+from tests.rag_evaluation.reporting.aggregate import write_latest
+from tests.rag_evaluation.reporting.dimensions import get_quality_dimension
+from tests.rag_evaluation.reporting.schema import Status
+
+EVENTS_PATH = PROJECT_ROOT / "reports" / "results" / "events.jsonl"
+LATEST_PATH = PROJECT_ROOT / "reports" / "results" / "latest.json"
 
 
 # Only the golden files that carry an expected_id/expected_ids (a golden
@@ -52,6 +59,7 @@ def get_retrieval_ragas_cases():
         for suite in suites:
             for case in suite["cases"]:
                 if "expected_id" in case or "expected_ids" in case:
+                    case["case_id"] = f"{file_name}::{case['name']}"
                     test_cases.append((suite["dataset"], case))
     return test_cases
 
@@ -87,11 +95,93 @@ def test_case(vector_db_service, request):
     return case
 
 
-def _retrieved_contexts(vector_db_service, test_case):
+@pytest.fixture(scope="session")
+def recorder():
+    """One Recorder per pytest session, so every metric module invoked in
+    the same run shares one run_id. Persists to the same events.jsonl the
+    reporting subsystem's aggregator reads from — same pattern as
+    Generation's conftest.py (see ../generation/conftest.py)."""
+    return Recorder(EVENTS_PATH)
+
+
+def search_retrieval(vector_db_service, test_case):
+    """One ChromaDB search per case, same query/top_k/filter as before.
+    Returns (retrieved_contexts, retrieved_ids) from that single search
+    result, so the RAGAS metric input and the reporting fields can never
+    diverge by coming from two separate searches."""
     n_results = test_case.get("n_results", 3)
     search_result = vector_db_service.search(
         query_text=test_case["query"],
         n_results=n_results,
         where_filter=test_case.get("filter"),
     )
-    return search_result["documents"][0]
+    return search_result["documents"][0], search_result["ids"][0]
+
+
+def _expected_ids(test_case):
+    """Normalizes the golden data's expected_id (singular) / expected_ids
+    (list) shapes into one list, for the reporting-only expected_ids field."""
+    if "expected_ids" in test_case:
+        return test_case["expected_ids"]
+    if "expected_id" in test_case:
+        return [test_case["expected_id"]]
+    return None
+
+
+def record_retrieval_result(*, recorder, test_case, metric_name, result, retrieved_contexts, retrieved_ids):
+    """Reporting-only: persists one EvaluationResult for an already-computed
+    RAGAS MetricResult, then re-materializes latest.json. Mirrors
+    Generation's record_generation_result (see ../generation/conftest.py)
+    exactly, adapted for Retrieval's fields — never constructs a metric,
+    never calls .score(...), and never alters the result.
+
+    Status: NaN -> N/A, score=None, threshold=None; finite value with
+    min_score configured -> PASS/FAIL; finite value with no min_score yet
+    -> BASELINE (not currently exercised — every collected Retrieval case
+    already has an approved min_score, but this keeps the same generic
+    contract as Generation's reporting helper).
+
+    No Assistant model is involved in Retrieval at all (no LLM generation
+    step here, only vector search + Judge scoring), so assistant_model and
+    embedding_model are always None — recording CHAT_MODEL here would be
+    an incorrect attribution.
+    """
+    is_nan = result.value != result.value
+    min_score = test_case["evaluation"]["ragas"][metric_name].get("min_score")
+
+    if is_nan:
+        status = Status.NOT_APPLICABLE
+        score = None
+        threshold = None
+    else:
+        score = float(result.value)
+        if min_score is None:
+            status = Status.BASELINE
+            threshold = None
+        else:
+            status = Status.PASS if score >= min_score else Status.FAIL
+            threshold = min_score
+
+    recorder.record(
+        framework="ragas",
+        phase="retrieval",
+        suite=test_case["case_id"].split("::", 1)[0],
+        case_id=test_case["case_id"],
+        case_name=test_case["name"],
+        metric=metric_name,
+        quality_dimension=get_quality_dimension("ragas", metric_name),
+        query=test_case["query"],
+        threshold=threshold,
+        status=status,
+        score=score,
+        retrieved_contexts=retrieved_contexts,
+        expected_ids=_expected_ids(test_case),
+        retrieved_ids=retrieved_ids,
+        filter=test_case.get("filter"),
+        reference_answer=test_case.get("reference_answer"),
+        judge_reason=getattr(result, "reason", None),
+        assistant_model=None,
+        judge_model=JUDGE_MODEL,
+        embedding_model=None,
+    )
+    write_latest(EVENTS_PATH, LATEST_PATH)
