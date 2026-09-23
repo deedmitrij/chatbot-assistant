@@ -3,7 +3,8 @@ from ragas.metrics.collections import ContextRecall
 
 from tests.rag_evaluation.frameworks.ragas.retrieval.conftest import (
     get_single_reference_ragas_cases,
-    _retrieved_contexts,
+    search_retrieval,
+    record_retrieval_result,
 )
 
 pytestmark = pytest.mark.live
@@ -12,20 +13,33 @@ pytestmark = pytest.mark.live
 @pytest.mark.parametrize(
     "test_case", get_single_reference_ragas_cases(), ids=lambda item: item[1]["name"], indirect=True
 )
-def test_context_recall(vector_db_service, ragas_judge_llm, test_case):
+def test_context_recall(vector_db_service, ragas_judge_llm, recorder, test_case):
     """
     ContextRecall: of what the reference answer needs, how much did we
     actually retrieve? The coverage half of the ContextPrecisionWithReference
     pair, run on the same single-reference case subset for the same reason
     (see get_single_reference_ragas_cases).
     """
-    retrieved_contexts = _retrieved_contexts(vector_db_service, test_case)
+    # Retrieval data preparation
+    retrieved_contexts, retrieved_ids = search_retrieval(vector_db_service, test_case)
     reference = test_case["reference_answer"]
 
+    # RAGAS evaluation
     result = ContextRecall(llm=ragas_judge_llm).score(
         user_input=test_case["query"], retrieved_contexts=retrieved_contexts, reference=reference
     )
 
+    # Reporting
+    record_retrieval_result(
+        recorder=recorder,
+        test_case=test_case,
+        metric_name="context_recall",
+        result=result,
+        retrieved_contexts=retrieved_contexts,
+        retrieved_ids=retrieved_ids,
+    )
+
+    # Test validation
     print(f"\nContextRecall[{test_case['name']}] = {result.value}")
 
     assert isinstance(result.value, (int, float)), (
