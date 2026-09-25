@@ -25,6 +25,18 @@
             "answer_correctness": {
               "min_score": 0.75
             }
+          },
+          "deepeval": {
+            "faithfulness": {},
+            "hallucination": {},
+            "answer_relevancy": {},
+            "geval_factual_correctness": {},
+            "geval_answer_correctness": {},
+            "geval_negative_constraint": {},
+            "geval_brand_consistency": {
+              "skip": true,
+              "skip_reason": "This case tests correct compliance under missing/restricted information (Negative Constraint), not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
+            }
           }
         }
       }
@@ -54,6 +66,18 @@
             },
             "answer_correctness": {
               "min_score": 0.75
+            }
+          },
+          "deepeval": {
+            "faithfulness": {},
+            "hallucination": {},
+            "answer_relevancy": {},
+            "geval_factual_correctness": {},
+            "geval_answer_correctness": {},
+            "geval_negative_constraint": {},
+            "geval_brand_consistency": {
+              "skip": true,
+              "skip_reason": "This case tests correct compliance under missing/restricted information (Negative Constraint), not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
             }
           }
         }
@@ -85,6 +109,24 @@
             "answer_correctness": {
               "min_score": 0.75
             }
+          },
+          "deepeval": {
+            "faithfulness": {
+              "skip": true,
+              "skip_reason": "Faithfulness requires non-empty retrieval_context to extract 'truths' from before any actual_output claim can be verified against them; this scenario intentionally has empty context, same structural dependency as RAGAS Faithfulness."
+            },
+            "hallucination": {
+              "skip": true,
+              "skip_reason": "Confirmed from source: with an empty context list, HallucinationMetric's QAG loop generates zero verdicts, and score_qag_verdicts() returns its empty_score default of 1.0 regardless of the actual_output's quality -- a trivial, non-measuring pass, not a meaningful score."
+            },
+            "answer_relevancy": {},
+            "geval_factual_correctness": {},
+            "geval_answer_correctness": {},
+            "geval_negative_constraint": {},
+            "geval_brand_consistency": {
+              "skip": true,
+              "skip_reason": "This case tests correct compliance under missing/restricted information (Negative Constraint), not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
+            }
           }
         }
       }
@@ -115,6 +157,18 @@
             },
             "answer_correctness": {
               "min_score": 0.45
+            }
+          },
+          "deepeval": {
+            "faithfulness": {},
+            "hallucination": {},
+            "answer_relevancy": {},
+            "geval_factual_correctness": {},
+            "geval_answer_correctness": {},
+            "geval_negative_constraint": {},
+            "geval_brand_consistency": {
+              "skip": true,
+              "skip_reason": "This case tests correct compliance under missing/restricted information (Negative Constraint), not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
             }
           }
         }
