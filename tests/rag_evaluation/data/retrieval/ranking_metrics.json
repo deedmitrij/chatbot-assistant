@@ -63,6 +63,11 @@
             "context_relevance": {"min_score": 0.90},
             "context_precision_with_reference": {"min_score": 0.90},
             "context_recall": {"min_score": 0.90}
+          },
+          "deepeval": {
+            "contextual_relevancy": {},
+            "contextual_precision": {},
+            "contextual_recall": {}
           }
         }
       },
@@ -77,6 +82,11 @@
             "context_relevance": {"min_score": 0.90},
             "context_precision_with_reference": {"min_score": 0.90},
             "context_recall": {"min_score": 0.90}
+          },
+          "deepeval": {
+            "contextual_relevancy": {},
+            "contextual_precision": {},
+            "contextual_recall": {}
           }
         }
       },
@@ -91,6 +101,11 @@
             "context_relevance": {"min_score": 0.90},
             "context_precision_with_reference": {"min_score": 0.90},
             "context_recall": {"min_score": 0.90}
+          },
+          "deepeval": {
+            "contextual_relevancy": {},
+            "contextual_precision": {},
+            "contextual_recall": {}
           }
         }
       },
@@ -105,6 +120,11 @@
             "context_relevance": {"min_score": 0.90},
             "context_precision_with_reference": {"min_score": 0.90},
             "context_recall": {"min_score": 0.90}
+          },
+          "deepeval": {
+            "contextual_relevancy": {},
+            "contextual_precision": {},
+            "contextual_recall": {}
           }
         }
       },
@@ -119,6 +139,11 @@
             "context_relevance": {"min_score": 0.70},
             "context_precision_with_reference": {"min_score": 0.90},
             "context_recall": {"min_score": 0.90}
+          },
+          "deepeval": {
+            "contextual_relevancy": {},
+            "contextual_precision": {},
+            "contextual_recall": {}
           }
         }
       },
@@ -136,6 +161,9 @@
           "reference_answer_is_composite": true,
           "ragas": {
             "context_relevance": {"min_score": 0.90}
+          },
+          "deepeval": {
+            "contextual_relevancy": {}
           }
         }
       },
@@ -149,6 +177,9 @@
           "reference_answer_is_composite": true,
           "ragas": {
             "context_relevance": {"min_score": 0.90}
+          },
+          "deepeval": {
+            "contextual_relevancy": {}
           }
         }
       }

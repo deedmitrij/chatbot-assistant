@@ -25,6 +25,16 @@ from tests.rag_evaluation.reporting.dimensions import get_quality_dimension
         # The relevancy suite's two distinct checks map to two dimensions.
         ("custom", "required_facts", "completeness"),
         ("custom", "judge_verdict", "relevancy"),
+        ("deepeval", "contextual_relevancy", "retrieval_relevance"),
+        ("deepeval", "contextual_precision", "retrieval_precision"),
+        ("deepeval", "contextual_recall", "retrieval_recall"),
+        ("deepeval", "faithfulness", "groundedness"),
+        ("deepeval", "hallucination", "hallucination"),
+        ("deepeval", "answer_relevancy", "relevancy"),
+        ("deepeval", "geval_factual_correctness", "correctness"),
+        ("deepeval", "geval_answer_correctness", "correctness"),
+        ("deepeval", "geval_negative_constraint", "refusal"),
+        ("deepeval", "geval_brand_consistency", "persona"),
     ],
 )
 def test_known_mappings(framework, metric, expected):
@@ -36,7 +46,7 @@ def test_unknown_metric_returns_none_not_a_guess():
 
 
 def test_unknown_framework_returns_none():
-    assert get_quality_dimension("deepeval", "faithfulness") is None
+    assert get_quality_dimension("some_future_framework_not_yet_mapped", "faithfulness") is None
 
 
 def test_completeness_and_relevancy_are_distinct_dimensions():

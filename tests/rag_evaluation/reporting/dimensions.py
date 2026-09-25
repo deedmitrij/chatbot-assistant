@@ -45,7 +45,18 @@ QUALITY_DIMENSIONS = {
         "llm_brand_consistency": "persona",
         "expected_confidence": "confidence_calibration",
     },
-    "deepeval": {},
+    "deepeval": {
+        "contextual_relevancy": "retrieval_relevance",
+        "contextual_precision": "retrieval_precision",
+        "contextual_recall": "retrieval_recall",
+        "faithfulness": "groundedness",
+        "hallucination": "hallucination",
+        "answer_relevancy": "relevancy",
+        "geval_factual_correctness": "correctness",
+        "geval_answer_correctness": "correctness",
+        "geval_negative_constraint": "refusal",
+        "geval_brand_consistency": "persona",
+    },
 }
 
 

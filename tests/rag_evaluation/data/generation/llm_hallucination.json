@@ -27,6 +27,21 @@
             "answer_correctness": {
               "min_score": 0.75
             }
+          },
+          "deepeval": {
+            "faithfulness": {
+              "skip": true,
+              "skip_reason": "Expected behavior is an absence-of-information response; DeepEval Faithfulness extracts 'truths' from the retrieval_context and classifies each actual_output claim against them, so it cannot reliably verify a correct claim of absence when the context is silent on the queried attribute rather than empty."
+            },
+            "hallucination": {},
+            "answer_relevancy": {},
+            "geval_factual_correctness": {},
+            "geval_answer_correctness": {},
+            "geval_negative_constraint": {},
+            "geval_brand_consistency": {
+              "skip": true,
+              "skip_reason": "This case tests correct compliance under missing/restricted information (Negative Constraint), not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
+            }
           }
         }
       }
@@ -58,6 +73,18 @@
             },
             "answer_correctness": {
               "min_score": 0.75
+            }
+          },
+          "deepeval": {
+            "faithfulness": {},
+            "hallucination": {},
+            "answer_relevancy": {},
+            "geval_factual_correctness": {},
+            "geval_answer_correctness": {},
+            "geval_negative_constraint": {},
+            "geval_brand_consistency": {
+              "skip": true,
+              "skip_reason": "This case tests correct compliance under missing/restricted information (Negative Constraint), not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
             }
           }
         }
@@ -91,6 +118,18 @@
             "answer_correctness": {
               "min_score": 0.75
             }
+          },
+          "deepeval": {
+            "faithfulness": {},
+            "hallucination": {},
+            "answer_relevancy": {},
+            "geval_factual_correctness": {},
+            "geval_answer_correctness": {},
+            "geval_negative_constraint": {},
+            "geval_brand_consistency": {
+              "skip": true,
+              "skip_reason": "This case tests correct compliance under missing/restricted information (Negative Constraint), not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
+            }
           }
         }
       }
@@ -122,6 +161,18 @@
             },
             "answer_correctness": {
               "min_score": 0.45
+            }
+          },
+          "deepeval": {
+            "faithfulness": {},
+            "hallucination": {},
+            "answer_relevancy": {},
+            "geval_factual_correctness": {},
+            "geval_answer_correctness": {},
+            "geval_negative_constraint": {},
+            "geval_brand_consistency": {
+              "skip": true,
+              "skip_reason": "This case tests correct compliance under missing/restricted information (Negative Constraint), not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
             }
           }
         }

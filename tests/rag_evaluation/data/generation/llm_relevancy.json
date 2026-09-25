@@ -27,6 +27,21 @@
             "answer_correctness": {
               "min_score": 0.75
             }
+          },
+          "deepeval": {
+            "faithfulness": {},
+            "hallucination": {},
+            "answer_relevancy": {},
+            "geval_factual_correctness": {},
+            "geval_answer_correctness": {},
+            "geval_negative_constraint": {
+              "skip": true,
+              "skip_reason": "Multi-intent factual case with all requested information present in context; no missing-information, restriction, or refusal behavior is being tested here."
+            },
+            "geval_brand_consistency": {
+              "skip": true,
+              "skip_reason": "This case tests factual/informational content, not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
+            }
           }
         }
       },
@@ -50,6 +65,21 @@
             },
             "answer_correctness": {
               "min_score": 0.45
+            }
+          },
+          "deepeval": {
+            "faithfulness": {},
+            "hallucination": {},
+            "answer_relevancy": {},
+            "geval_factual_correctness": {},
+            "geval_answer_correctness": {},
+            "geval_negative_constraint": {
+              "skip": true,
+              "skip_reason": "Multi-intent factual case with all requested information present in context; no missing-information, restriction, or refusal behavior is being tested here."
+            },
+            "geval_brand_consistency": {
+              "skip": true,
+              "skip_reason": "This case tests factual/informational content, not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
             }
           }
         }

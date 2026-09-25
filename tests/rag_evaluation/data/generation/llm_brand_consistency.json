@@ -26,6 +26,24 @@
               "skip": true,
               "skip_reason": "AnswerCorrectness is reference-answer based; this brand/persona scenario intentionally has no reference_answer."
             }
+          },
+          "deepeval": {
+            "faithfulness": {},
+            "hallucination": {},
+            "answer_relevancy": {},
+            "geval_factual_correctness": {
+              "skip": true,
+              "skip_reason": "GEval Factual Correctness requires expected_output (confirmed from source: GEval raises MissingTestCaseParamsError when expected_output is None); this brand/persona scenario intentionally has no reference_answer, same structural reason RAGAS FactualCorrectness is skipped here."
+            },
+            "geval_answer_correctness": {
+              "skip": true,
+              "skip_reason": "GEval Answer Correctness requires expected_output (confirmed from source: GEval raises MissingTestCaseParamsError when expected_output is None); this brand/persona scenario intentionally has no reference_answer, same structural reason RAGAS AnswerCorrectness is skipped here."
+            },
+            "geval_negative_constraint": {
+              "skip": true,
+              "skip_reason": "This case tests the Assistant's hotel-brand identity, tone, or persona, not compliance under missing or restricted information; missing-information/refusal behavior is evaluated on the dedicated llm_negative_constraint.json and llm_hallucination.json scenarios."
+            },
+            "geval_brand_consistency": {}
           }
         }
       },
@@ -51,6 +69,24 @@
               "skip": true,
               "skip_reason": "AnswerCorrectness is reference-answer based; this brand/persona scenario intentionally has no reference_answer."
             }
+          },
+          "deepeval": {
+            "faithfulness": {},
+            "hallucination": {},
+            "answer_relevancy": {},
+            "geval_factual_correctness": {
+              "skip": true,
+              "skip_reason": "GEval Factual Correctness requires expected_output (confirmed from source: GEval raises MissingTestCaseParamsError when expected_output is None); this brand/persona scenario intentionally has no reference_answer, same structural reason RAGAS FactualCorrectness is skipped here."
+            },
+            "geval_answer_correctness": {
+              "skip": true,
+              "skip_reason": "GEval Answer Correctness requires expected_output (confirmed from source: GEval raises MissingTestCaseParamsError when expected_output is None); this brand/persona scenario intentionally has no reference_answer, same structural reason RAGAS AnswerCorrectness is skipped here."
+            },
+            "geval_negative_constraint": {
+              "skip": true,
+              "skip_reason": "This case tests the Assistant's hotel-brand identity, tone, or persona, not compliance under missing or restricted information; missing-information/refusal behavior is evaluated on the dedicated llm_negative_constraint.json and llm_hallucination.json scenarios."
+            },
+            "geval_brand_consistency": {}
           }
         }
       }
@@ -83,6 +119,30 @@
               "skip": true,
               "skip_reason": "AnswerCorrectness is reference-answer based; this brand/persona scenario intentionally has no reference_answer."
             }
+          },
+          "deepeval": {
+            "faithfulness": {
+              "skip": true,
+              "skip_reason": "Scenario evaluates persona/style behavior rather than factual grounding against retrieved context; DeepEval Faithfulness measures the same groundedness concept as RAGAS Faithfulness, so this test-case-level rationale applies identically regardless of the specific claim-classification algorithm."
+            },
+            "hallucination": {
+              "skip": true,
+              "skip_reason": "Scenario evaluates persona/style behavior rather than factual grounding against retrieved context; Hallucination checks actual_output for contradictions against context, the same groundedness concept as Faithfulness, so this test-case-level rationale applies identically."
+            },
+            "answer_relevancy": {},
+            "geval_factual_correctness": {
+              "skip": true,
+              "skip_reason": "GEval Factual Correctness requires expected_output (confirmed from source: GEval raises MissingTestCaseParamsError when expected_output is None); this brand/persona scenario intentionally has no reference_answer, same structural reason RAGAS FactualCorrectness is skipped here."
+            },
+            "geval_answer_correctness": {
+              "skip": true,
+              "skip_reason": "GEval Answer Correctness requires expected_output (confirmed from source: GEval raises MissingTestCaseParamsError when expected_output is None); this brand/persona scenario intentionally has no reference_answer, same structural reason RAGAS AnswerCorrectness is skipped here."
+            },
+            "geval_negative_constraint": {
+              "skip": true,
+              "skip_reason": "This case tests the Assistant's hotel-brand identity, tone, or persona, not compliance under missing or restricted information; missing-information/refusal behavior is evaluated on the dedicated llm_negative_constraint.json and llm_hallucination.json scenarios."
+            },
+            "geval_brand_consistency": {}
           }
         }
       },
@@ -109,6 +169,30 @@
               "skip": true,
               "skip_reason": "AnswerCorrectness is reference-answer based; this brand/persona scenario intentionally has no reference_answer."
             }
+          },
+          "deepeval": {
+            "faithfulness": {
+              "skip": true,
+              "skip_reason": "Scenario evaluates tone/professionalism rather than factual grounding against retrieved context; DeepEval Faithfulness measures the same groundedness concept as RAGAS Faithfulness, so this test-case-level rationale applies identically regardless of the specific claim-classification algorithm."
+            },
+            "hallucination": {
+              "skip": true,
+              "skip_reason": "Scenario evaluates tone/professionalism rather than factual grounding against retrieved context; Hallucination checks actual_output for contradictions against context, the same groundedness concept as Faithfulness, so this test-case-level rationale applies identically."
+            },
+            "answer_relevancy": {},
+            "geval_factual_correctness": {
+              "skip": true,
+              "skip_reason": "GEval Factual Correctness requires expected_output (confirmed from source: GEval raises MissingTestCaseParamsError when expected_output is None); this brand/persona scenario intentionally has no reference_answer, same structural reason RAGAS FactualCorrectness is skipped here."
+            },
+            "geval_answer_correctness": {
+              "skip": true,
+              "skip_reason": "GEval Answer Correctness requires expected_output (confirmed from source: GEval raises MissingTestCaseParamsError when expected_output is None); this brand/persona scenario intentionally has no reference_answer, same structural reason RAGAS AnswerCorrectness is skipped here."
+            },
+            "geval_negative_constraint": {
+              "skip": true,
+              "skip_reason": "This case tests the Assistant's hotel-brand identity, tone, or persona, not compliance under missing or restricted information; missing-information/refusal behavior is evaluated on the dedicated llm_negative_constraint.json and llm_hallucination.json scenarios."
+            },
+            "geval_brand_consistency": {}
           }
         }
       }
