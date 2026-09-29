@@ -60,14 +60,16 @@
         "reference_answer": "Breakfast buffet is served every morning from 6:30 AM to 10:00 AM.",
         "evaluation": {
           "ragas": {
-            "context_relevance": {"min_score": 0.90},
-            "context_precision_with_reference": {"min_score": 0.90},
-            "context_recall": {"min_score": 0.90}
+            "min_score": {
+              "context_precision_with_reference": 0.90,
+              "context_recall": 0.90
+            }
           },
           "deepeval": {
-            "contextual_relevancy": {},
-            "contextual_precision": {},
-            "contextual_recall": {}
+            "min_score": {
+              "contextual_precision": 0.85,
+              "contextual_recall": 0.85
+            }
           }
         }
       },
@@ -79,14 +81,16 @@
         "reference_answer": "No, Wi-Fi is complimentary throughout the hotel.",
         "evaluation": {
           "ragas": {
-            "context_relevance": {"min_score": 0.90},
-            "context_precision_with_reference": {"min_score": 0.90},
-            "context_recall": {"min_score": 0.90}
+            "min_score": {
+              "context_precision_with_reference": 0.90,
+              "context_recall": 0.90
+            }
           },
           "deepeval": {
-            "contextual_relevancy": {},
-            "contextual_precision": {},
-            "contextual_recall": {}
+            "min_score": {
+              "contextual_precision": 0.85,
+              "contextual_recall": 0.85
+            }
           }
         }
       },
@@ -98,14 +102,16 @@
         "reference_answer": "Check-in begins at 3:00 PM.",
         "evaluation": {
           "ragas": {
-            "context_relevance": {"min_score": 0.90},
-            "context_precision_with_reference": {"min_score": 0.90},
-            "context_recall": {"min_score": 0.90}
+            "min_score": {
+              "context_precision_with_reference": 0.90,
+              "context_recall": 0.90
+            }
           },
           "deepeval": {
-            "contextual_relevancy": {},
-            "contextual_precision": {},
-            "contextual_recall": {}
+            "min_score": {
+              "contextual_precision": 0.85,
+              "contextual_recall": 0.85
+            }
           }
         }
       },
@@ -117,14 +123,16 @@
         "reference_answer": "Self-parking costs $20 per night.",
         "evaluation": {
           "ragas": {
-            "context_relevance": {"min_score": 0.90},
-            "context_precision_with_reference": {"min_score": 0.90},
-            "context_recall": {"min_score": 0.90}
+            "min_score": {
+              "context_precision_with_reference": 0.90,
+              "context_recall": 0.90
+            }
           },
           "deepeval": {
-            "contextual_relevancy": {},
-            "contextual_precision": {},
-            "contextual_recall": {}
+            "min_score": {
+              "contextual_precision": 0.85,
+              "contextual_recall": 0.85
+            }
           }
         }
       },
@@ -136,14 +144,16 @@
         "reference_answer": "Yes, massages can be booked by appointment at the spa.",
         "evaluation": {
           "ragas": {
-            "context_relevance": {"min_score": 0.70},
-            "context_precision_with_reference": {"min_score": 0.90},
-            "context_recall": {"min_score": 0.90}
+            "min_score": {
+              "context_precision_with_reference": 0.90,
+              "context_recall": 0.90
+            }
           },
           "deepeval": {
-            "contextual_relevancy": {},
-            "contextual_precision": {},
-            "contextual_recall": {}
+            "min_score": {
+              "contextual_precision": 0.85,
+              "contextual_recall": 0.85
+            }
           }
         }
       },
@@ -158,13 +168,7 @@
         },
         "reference_answer": "The fitness center and room service are both available 24 hours a day.",
         "evaluation": {
-          "reference_answer_is_composite": true,
-          "ragas": {
-            "context_relevance": {"min_score": 0.90}
-          },
-          "deepeval": {
-            "contextual_relevancy": {}
-          }
+          "reference_answer_is_composite": true
         }
       },
       {
@@ -174,15 +178,21 @@
         "relevance_grades": {"pool_indoor": 3, "pool_outdoor": 3},
         "reference_answer": "We have both an indoor heated pool open 24 hours a day and an outdoor pool open from 7 AM to 9 PM.",
         "evaluation": {
-          "reference_answer_is_composite": true,
-          "ragas": {
-            "context_relevance": {"min_score": 0.90}
-          },
-          "deepeval": {
-            "contextual_relevancy": {}
-          }
+          "reference_answer_is_composite": true
         }
       }
-    ]
+    ],
+    "evaluation": {
+      "custom": {
+        "min_score": {
+          "HitRate@1": 0.85,
+          "HitRate@K": 0.85,
+          "Recall@K": 0.75,
+          "Precision@K": 0.30,
+          "MRR": 0.85,
+          "NDCG@K": 0.80
+        }
+      }
+    }
   }
 ]

@@ -15,32 +15,15 @@
         "reference_answer": "No, staying until 1 PM is not free. Late check-out until 2 PM is available for a $30 fee.",
         "evaluation": {
           "ragas": {
-            "faithfulness": {
-              "min_score": 0.90
-            },
-            "answer_relevancy": {
-              "min_score": 0.60
-            },
-            "factual_correctness": {
-              "min_score": 0.60
-            },
-            "answer_correctness": {
-              "min_score": 0.75
+            "min_score": {
+              "factual_correctness": 0.60,
+              "answer_correctness": 0.75
             }
           },
           "deepeval": {
-            "faithfulness": {},
-            "hallucination": {},
-            "answer_relevancy": {},
-            "geval_factual_correctness": {},
-            "geval_answer_correctness": {},
-            "geval_negative_constraint": {
-              "skip": true,
-              "skip_reason": "This case tests correct application of a policy rule to reach the right derived conclusion from information already present in context (Correctness), not compliance under missing or restricted information (Negative Constraint); already covered by GEval Factual/Answer Correctness."
-            },
-            "geval_brand_consistency": {
-              "skip": true,
-              "skip_reason": "This case tests factual/informational content, not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
+            "min_score": {
+              "geval_factual_correctness": 0.80,
+              "geval_answer_correctness": 0.75
             }
           }
         }
@@ -53,32 +36,15 @@
         "reference_answer": "No, smoking is strictly prohibited in all rooms, including the balcony.",
         "evaluation": {
           "ragas": {
-            "faithfulness": {
-              "min_score": 0.30
-            },
-            "answer_relevancy": {
-              "min_score": 0.50
-            },
-            "factual_correctness": {
-              "min_score": 0.30
-            },
-            "answer_correctness": {
-              "min_score": 0.45
+            "min_score": {
+              "factual_correctness": 0.30,
+              "answer_correctness": 0.45
             }
           },
           "deepeval": {
-            "faithfulness": {},
-            "hallucination": {},
-            "answer_relevancy": {},
-            "geval_factual_correctness": {},
-            "geval_answer_correctness": {},
-            "geval_negative_constraint": {
-              "skip": true,
-              "skip_reason": "This case tests correct application of a policy rule to reach the right derived conclusion from information already present in context (Correctness), not compliance under missing or restricted information (Negative Constraint); already covered by GEval Factual/Answer Correctness."
-            },
-            "geval_brand_consistency": {
-              "skip": true,
-              "skip_reason": "This case tests factual/informational content, not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
+            "min_score": {
+              "geval_factual_correctness": 0.80,
+              "geval_answer_correctness": 0.75
             }
           }
         }
@@ -100,32 +66,15 @@
         "reference_answer": "The shuttle is the cheapest option at $15, compared to a taxi at $40.",
         "evaluation": {
           "ragas": {
-            "faithfulness": {
-              "min_score": 0.90
-            },
-            "answer_relevancy": {
-              "min_score": 0.75
-            },
-            "factual_correctness": {
-              "min_score": 0.60
-            },
-            "answer_correctness": {
-              "min_score": 0.60
+            "min_score": {
+              "factual_correctness": 0.60,
+              "answer_correctness": 0.60
             }
           },
           "deepeval": {
-            "faithfulness": {},
-            "hallucination": {},
-            "answer_relevancy": {},
-            "geval_factual_correctness": {},
-            "geval_answer_correctness": {},
-            "geval_negative_constraint": {
-              "skip": true,
-              "skip_reason": "This case tests correct application of a policy rule to reach the right derived conclusion from information already present in context (Correctness), not compliance under missing or restricted information (Negative Constraint); already covered by GEval Factual/Answer Correctness."
-            },
-            "geval_brand_consistency": {
-              "skip": true,
-              "skip_reason": "This case tests factual/informational content, not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
+            "min_score": {
+              "geval_factual_correctness": 0.80,
+              "geval_answer_correctness": 0.75
             }
           }
         }
@@ -146,33 +95,15 @@
         "reference_answer": "No, parrots are not allowed; only small dogs and cats under 15 lbs are permitted pets.",
         "evaluation": {
           "ragas": {
-            "faithfulness": {
-              "min_score": 0.90
-            },
-            "answer_relevancy": {
-              "skip": true,
-              "skip_reason": "Targeted diagnostic confirmed a RAGAS noncommittal false positive: semantic similarity was high (0.836) but the direct denial was hard-zeroed by the noncommittal classifier."
-            },
-            "factual_correctness": {
-              "min_score": 0.50
-            },
-            "answer_correctness": {
-              "min_score": 0.45
+            "min_score": {
+              "factual_correctness": 0.50,
+              "answer_correctness": 0.45
             }
           },
           "deepeval": {
-            "faithfulness": {},
-            "hallucination": {},
-            "answer_relevancy": {},
-            "geval_factual_correctness": {},
-            "geval_answer_correctness": {},
-            "geval_negative_constraint": {
-              "skip": true,
-              "skip_reason": "This case tests correct application of a policy rule to reach the right derived conclusion from information already present in context (Correctness), not compliance under missing or restricted information (Negative Constraint); already covered by GEval Factual/Answer Correctness."
-            },
-            "geval_brand_consistency": {
-              "skip": true,
-              "skip_reason": "This case tests factual/informational content, not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
+            "min_score": {
+              "geval_factual_correctness": 0.80,
+              "geval_answer_correctness": 0.75
             }
           }
         }

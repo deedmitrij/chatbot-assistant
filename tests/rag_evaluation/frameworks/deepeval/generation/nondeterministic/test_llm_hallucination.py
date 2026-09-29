@@ -2,46 +2,31 @@ import pytest
 from deepeval.metrics import HallucinationMetric
 from deepeval.test_case import LLMTestCase
 
+from tests.rag_evaluation.frameworks.helpers import get_all_generation_test_cases_from_file, get_or_generate_response
 from tests.rag_evaluation.frameworks.deepeval.generation.conftest import (
-    get_generation_deepeval_cases,
-    get_or_generate_response,
     record_generation_result,
+    resolve_min_score,
 )
 
 pytestmark = pytest.mark.live
 
 
 @pytest.mark.parametrize(
-    "case", get_generation_deepeval_cases("hallucination"), ids=lambda c: c["case_id"]
+    "case", get_all_generation_test_cases_from_file("llm_hallucination.json"), ids=lambda c: c["case_id"]
 )
 def test_hallucination(assistant_llm_service, deepeval_judge_model, assistant_response_cache, recorder, case):
     """
     Hallucination: for each item in `context` (not `retrieval_context` --
     HallucinationMetric's required params are input/actual_output/context),
-    does the Assistant's real response contradict it?
+    does the Assistant's real response contradict it? Custom has no
+    equivalent deterministic check; DeepEval is the only framework
+    exercising this dimension. Reads llm_hallucination.json only.
 
     SCORE DIRECTION -- confirmed from the installed source (the Judge prompt
     literally asks "does the actual output AGREE with context?", scored as
     (# agreeing context items) / (# context items)) and from DeepEval's own
     docs: HIGHER IS BETTER, same direction as Faithfulness -- 1.0 means no
-    contradictions found, 0.0 means every context item is contradicted. This
-    is the opposite of what the metric's name might suggest (a raw
-    "contamination rate"), so record_generation_result()'s existing
-    min_score convention (status=PASS when score >= min_score) is already
-    correct here with no inversion or special-casing.
-
-    Applicability deliberately does NOT copy RAGAS Faithfulness's skip list:
-    Hallucination only flags outright contradiction ("You should FORGIVE
-    cases where actual output is lacking in detail... ONLY provide a 'no'
-    answer if IT IS A CONTRADICTION" -- from the installed prompt), so a
-    correct "this detail isn't specified" answer about an attribute the
-    context is merely silent on does NOT contradict that context and scores
-    well. This is why all 4 llm_hallucination.json cases are applicable here,
-    including "Pool Temperature", which RAGAS Faithfulness itself skips for
-    the opposite reason (its claim-decomposition approach needs the claim to
-    be entailed, not merely non-contradicted). See
-    evaluation.deepeval.hallucination.skip_reason on the 3 cases that ARE
-    skipped for the specific, confirmed reason in each.
+    contradictions found, 0.0 means every context item is contradicted.
     """
     # Assistant response preparation
     assistant_result = get_or_generate_response(assistant_response_cache, assistant_llm_service, case)
@@ -76,7 +61,7 @@ def test_hallucination(assistant_llm_service, deepeval_judge_model, assistant_re
         f"'{case['case_id']}': Hallucination score {metric.score} out of [0, 1] range"
     )
 
-    min_score = case["evaluation"]["deepeval"]["hallucination"].get("min_score")
+    min_score = resolve_min_score(case["evaluation"]["deepeval"], "hallucination")
     if min_score is not None:
         assert metric.score >= min_score, (
             f"'{case['case_id']}': Hallucination {metric.score:.3f} below minimum {min_score:.3f}"

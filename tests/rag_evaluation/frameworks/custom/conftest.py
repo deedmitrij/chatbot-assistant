@@ -1,16 +1,17 @@
 from pathlib import Path
 from config import CHAT_MODEL, JUDGE_MODEL, LLM_BASE_URL
 
-# A single shared conftest here (rather than duplicate pytest_html_report_title
-# /pytest_metadata implementations in the retrieval and generation conftest.py
-# files) avoids two conflicting hook implementations firing when both suites
-# are collected in one run.
+
+# --- Pytest HTML report configuration (Custom-only) -------------------------
+# A separate, optional report, independent of the shared Recorder/events.jsonl
+# reporting -- the two never read or write each other's state.
 #
-# Both pytest-metadata's pytest_metadata hook and pytest-html's
-# pytest_html_report_title hook fire before collection (from pytest_configure
-# and pytest_sessionstart respectively), so which suite(s) are active can't be
-# read from collected items — it's detected instead from the CLI path
-# arguments (config.args), which pytest_configure already has access to.
+# Centralized here rather than duplicated in generation/retrieval conftests
+# to avoid two conflicting hook implementations. Both pytest-metadata's
+# pytest_metadata hook and pytest-html's pytest_html_report_title hook fire
+# before collection, so which suite(s) are active can't be read from
+# collected items -- it's detected instead from the CLI path arguments
+# (config.args), which pytest_configure already has access to.
 _RETRIEVAL_DIR = (Path(__file__).parent / "retrieval").resolve()
 _GENERATION_DIR = (Path(__file__).parent / "generation" / "nondeterministic").resolve()
 _config_ref = {"config": None}
@@ -72,3 +73,4 @@ def pytest_metadata(metadata, config):
         metadata["Evaluation type"] = "Custom pytest-based RAG Retrieval"
         metadata["Vector DB"] = "ChromaDB"
         metadata["Top-K"] = "3"
+# --- End Pytest HTML report configuration (Custom-only) ----------------------

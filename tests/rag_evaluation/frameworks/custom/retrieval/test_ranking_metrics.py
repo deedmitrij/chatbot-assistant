@@ -1,6 +1,12 @@
+import json
 import math
 
-from tests.rag_evaluation.frameworks.custom.retrieval.conftest import get_all_test_cases_from_file
+import pytest
+from config import RAG_EVALUATION_DATA_DIR
+from tests.rag_evaluation.frameworks.helpers import get_all_retrieval_test_cases_from_file
+from tests.rag_evaluation.frameworks.custom.retrieval.conftest import record_custom_retrieval_result
+
+SUITE_FILE = "ranking_metrics.json"
 
 # K=3 matches VectorDBService.search()'s default n_results, which is also
 # what KnowledgeManager.get_relevant_context() hands to the LLM in
@@ -163,7 +169,18 @@ def ndcg_at_k(results, k):
     return sum(per_query_ndcg) / len(per_query_ndcg)
 
 
-def test_ranking_metrics(vector_db_service):
+@pytest.fixture(scope="module")
+def custom_min_scores():
+    """Loads this suite's top-level Custom aggregate thresholds directly --
+    the flattened per-case loader doesn't preserve a suite-level `evaluation`
+    block, and this is the only test that needs one."""
+    file_path = RAG_EVALUATION_DATA_DIR / "retrieval" / SUITE_FILE
+    with open(file_path, "r") as f:
+        suites = json.load(f)
+    return suites[0]["evaluation"]["custom"]["min_score"]
+
+
+def test_ranking_metrics(vector_db_service, recorder, custom_min_scores):
     """
     Aggregate retrieval quality over a controlled multi-query dataset
     (ranking_metrics.json), distinct from the other vector_db tests
@@ -176,14 +193,15 @@ def test_ranking_metrics(vector_db_service):
     document alongside two highly-relevant ones — making NDCG@K
     meaningfully different from the binary metrics.
 
-    Regression floors were set below a measured baseline (HitRate@1=1.000,
-    HitRate@3=1.000, Recall@3=0.929, Precision@3=0.381, MRR=1.000,
-    NDCG@3=0.937), each with margin for one query's result getting modestly
-    worse without failing the test on normal noise, while still catching a
-    real regression.
+    Regression floors (custom_min_scores, loaded from the suite's own
+    evaluation.custom.min_score) were set below a measured baseline
+    (HitRate@1=1.000, HitRate@3=1.000, Recall@3=0.929, Precision@3=0.381,
+    MRR=1.000, NDCG@3=0.937), each with margin for one query's result
+    getting modestly worse without failing the test on normal noise, while
+    still catching a real regression.
     """
-    suites = get_all_test_cases_from_file("ranking_metrics.json")
-    dataset, cases = suites[0][0], [case for _, case in suites]
+    cases = get_all_retrieval_test_cases_from_file(SUITE_FILE)
+    dataset = cases[0]["dataset"]
 
     existing_ids = vector_db_service.collection.get()["ids"]
     vector_db_service.delete_by_ids(existing_ids)
@@ -220,9 +238,33 @@ def test_ranking_metrics(vector_db_service):
     print(f"  MRR         = {mrr_score:.3f}")
     print(f"  NDCG@{K}      = {ndcg_k:.3f}")
 
-    assert hit_rate_1 >= 0.85, f"HitRate@1 regressed: {hit_rate_1:.3f}"
-    assert hit_rate_k >= 0.85, f"HitRate@{K} regressed: {hit_rate_k:.3f}"
-    assert recall_k >= 0.75, f"Recall@{K} regressed: {recall_k:.3f}"
-    assert precision_k >= 0.30, f"Precision@{K} regressed: {precision_k:.3f}"
-    assert mrr_score >= 0.85, f"MRR regressed: {mrr_score:.3f}"
-    assert ndcg_k >= 0.80, f"NDCG@{K} regressed: {ndcg_k:.3f}"
+    # This is an aggregate test over the whole dataset, not a per-case one:
+    # there is no single query/case to attribute each metric to, so a
+    # synthetic case identity is used, matching the aggregate nature of
+    # the computation itself.
+    aggregate_case_name = "Aggregate (all ranking-metrics queries)"
+    aggregate_query = f"[aggregate over {len(cases)} queries]"
+    results_by_metric = {
+        "HitRate@1": hit_rate_1,
+        "HitRate@K": hit_rate_k,
+        "Recall@K": recall_k,
+        "Precision@K": precision_k,
+        "MRR": mrr_score,
+        "NDCG@K": ndcg_k,
+    }
+    outcomes = {}
+    for metric_name, value in results_by_metric.items():
+        threshold = custom_min_scores[metric_name]
+        passed = value >= threshold
+        outcomes[metric_name] = passed
+        record_custom_retrieval_result(
+            recorder=recorder, file_name=SUITE_FILE, case_name=aggregate_case_name, metric_name=metric_name,
+            score=value, threshold=threshold, passed=passed, query=aggregate_query,
+        )
+
+    assert outcomes["HitRate@1"], f"HitRate@1 regressed: {hit_rate_1:.3f}"
+    assert outcomes["HitRate@K"], f"HitRate@{K} regressed: {hit_rate_k:.3f}"
+    assert outcomes["Recall@K"], f"Recall@{K} regressed: {recall_k:.3f}"
+    assert outcomes["Precision@K"], f"Precision@{K} regressed: {precision_k:.3f}"
+    assert outcomes["MRR"], f"MRR regressed: {mrr_score:.3f}"
+    assert outcomes["NDCG@K"], f"NDCG@{K} regressed: {ndcg_k:.3f}"

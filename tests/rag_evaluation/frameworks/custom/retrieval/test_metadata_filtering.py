@@ -1,9 +1,12 @@
 import pytest
-from tests.rag_evaluation.frameworks.custom.retrieval.conftest import get_all_test_cases_from_file
+from tests.rag_evaluation.frameworks.helpers import get_all_retrieval_test_cases_from_file
+from tests.rag_evaluation.frameworks.custom.retrieval.conftest import record_custom_retrieval_result
+
+SUITE_FILE = "metadata_filtering.json"
 
 
-@pytest.mark.parametrize("test_case", get_all_test_cases_from_file("metadata_filtering.json"), indirect=True, ids=lambda x: x[1]["name"])
-def test_metadata_filtering(vector_db_service, test_case):
+@pytest.mark.parametrize("test_case", get_all_retrieval_test_cases_from_file(SUITE_FILE), indirect=True, ids=lambda c: c["name"])
+def test_metadata_filtering(vector_db_service, recorder, test_case):
     """
     Concept: metadata filtering — a boundary/access-control check, not a
     ranking metric.
@@ -24,5 +27,21 @@ def test_metadata_filtering(vector_db_service, test_case):
     doc_id = results['ids'][0][0]
     distance = results['distances'][0][0]
 
-    assert doc_id == test_case['expected_id'], f"Filter failed! Wrong document"
-    assert distance <= test_case["evaluation"]["custom"]["max_distance"], "Distance too high!"
+    filter_ok = doc_id == test_case['expected_id']
+    record_custom_retrieval_result(
+        recorder=recorder, file_name=SUITE_FILE, case_name=test_case["name"], metric_name="metadata_filtering",
+        score=1.0 if filter_ok else 0.0, threshold=None, passed=filter_ok, query=test_case["query"],
+        retrieved_contexts=results.get("documents", [None])[0], expected_ids=[test_case['expected_id']],
+        retrieved_ids=results['ids'][0], filter=test_case["filter"],
+    )
+    assert filter_ok, "Filter failed! Wrong document"
+
+    max_distance = test_case["evaluation"]["custom"]["max_distance"]
+    distance_ok = distance <= max_distance
+    record_custom_retrieval_result(
+        recorder=recorder, file_name=SUITE_FILE, case_name=test_case["name"], metric_name="max_distance",
+        score=distance, threshold=max_distance, passed=distance_ok, query=test_case["query"],
+        retrieved_contexts=results.get("documents", [None])[0], expected_ids=[test_case['expected_id']],
+        retrieved_ids=results['ids'][0], filter=test_case["filter"],
+    )
+    assert distance_ok, "Distance too high!"

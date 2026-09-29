@@ -1,10 +1,9 @@
 import pytest
 from ragas.metrics.collections import AnswerRelevancy
 
+from tests.rag_evaluation.frameworks.helpers import get_all_generation_test_cases_from_file, get_or_generate_response
 from tests.rag_evaluation.frameworks.ragas.generation.conftest import (
     ANSWER_RELEVANCY_STRICTNESS,
-    get_generation_ragas_cases,
-    get_or_generate_response,
     record_generation_result,
 )
 from config import EMBEDDING_MODEL
@@ -13,7 +12,7 @@ pytestmark = pytest.mark.live
 
 
 @pytest.mark.parametrize(
-    "case", get_generation_ragas_cases("answer_relevancy"), ids=lambda c: c["case_id"]
+    "case", get_all_generation_test_cases_from_file("llm_relevancy.json"), ids=lambda c: c["case_id"]
 )
 def test_answer_relevancy(
     assistant_llm_service, ragas_judge_llm, ragas_embeddings, assistant_response_cache, recorder, case
@@ -22,7 +21,8 @@ def test_answer_relevancy(
     AnswerRelevancy: does the Assistant's real response actually address the
     user's question? Reference-free and context-free — self-consistency
     check via paraphrase-question generation and cosine similarity to the
-    original query, which also detects evasive/noncommittal answers.
+    original query, which also detects evasive/noncommittal answers. Reads
+    llm_relevancy.json only.
     """
     assistant_result = get_or_generate_response(assistant_response_cache, assistant_llm_service, case)
     response = assistant_result["answer"]
@@ -51,7 +51,7 @@ def test_answer_relevancy(
         f"'{case['case_id']}': AnswerRelevancy score {result.value} out of [0, 1] range"
     )
 
-    min_score = case["evaluation"]["ragas"]["answer_relevancy"]["min_score"]
+    min_score = case["evaluation"]["ragas"]["min_score"]
     assert result.value >= min_score, (
         f"'{case['case_id']}': AnswerRelevancy score {result.value:.3f} "
         f"below minimum {min_score:.3f}"

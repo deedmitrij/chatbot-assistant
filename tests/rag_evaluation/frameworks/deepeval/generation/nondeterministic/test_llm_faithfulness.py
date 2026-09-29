@@ -2,26 +2,26 @@ import pytest
 from deepeval.metrics import FaithfulnessMetric
 from deepeval.test_case import LLMTestCase
 
+from tests.rag_evaluation.frameworks.helpers import get_all_generation_test_cases_from_file, get_or_generate_response
 from tests.rag_evaluation.frameworks.deepeval.generation.conftest import (
-    get_generation_deepeval_cases,
-    get_or_generate_response,
     record_generation_result,
+    resolve_min_score,
 )
 
 pytestmark = pytest.mark.live
 
 
 @pytest.mark.parametrize(
-    "case", get_generation_deepeval_cases("faithfulness"), ids=lambda c: c["case_id"]
+    "case", get_all_generation_test_cases_from_file("llm_faithfulness.json"), ids=lambda c: c["case_id"]
 )
 def test_faithfulness(assistant_llm_service, deepeval_judge_model, assistant_response_cache, recorder, case):
     """
     Faithfulness: is the Assistant's real response supported by the same
-    context it was given? DeepEval-native counterpart to RAGAS's Faithfulness
-    -- same groundedness quality dimension, different algorithm (extracts
-    'truths' from retrieval_context and 'claims' from actual_output, then
-    classifies each claim's verdict against the truths, rather than RAGAS's
-    own claim-decomposition + NLI verification).
+    context it was given? DeepEval-native counterpart to RAGAS's
+    Faithfulness -- same groundedness quality dimension, different algorithm
+    (extracts 'truths' from retrieval_context and 'claims' from
+    actual_output, then classifies each claim's verdict against the truths).
+    Reads llm_faithfulness.json only.
     """
     # Assistant response preparation
     assistant_result = get_or_generate_response(assistant_response_cache, assistant_llm_service, case)
@@ -56,7 +56,7 @@ def test_faithfulness(assistant_llm_service, deepeval_judge_model, assistant_res
         f"'{case['case_id']}': Faithfulness score {metric.score} out of [0, 1] range"
     )
 
-    min_score = case["evaluation"]["deepeval"]["faithfulness"].get("min_score")
+    min_score = resolve_min_score(case["evaluation"]["deepeval"], "faithfulness")
     if min_score is not None:
         assert metric.score >= min_score, (
             f"'{case['case_id']}': Faithfulness {metric.score:.3f} below minimum {min_score:.3f}"

@@ -1,24 +1,20 @@
 import pytest
 from ragas.metrics.collections import Faithfulness
 
-from tests.rag_evaluation.frameworks.ragas.generation.conftest import (
-    get_generation_ragas_cases,
-    get_or_generate_response,
-    record_generation_result,
-)
+from tests.rag_evaluation.frameworks.helpers import get_all_generation_test_cases_from_file, get_or_generate_response
+from tests.rag_evaluation.frameworks.ragas.generation.conftest import record_generation_result
 
 pytestmark = pytest.mark.live
 
 
 @pytest.mark.parametrize(
-    "case", get_generation_ragas_cases("faithfulness"), ids=lambda c: c["case_id"]
+    "case", get_all_generation_test_cases_from_file("llm_faithfulness.json"), ids=lambda c: c["case_id"]
 )
 def test_faithfulness(assistant_llm_service, ragas_judge_llm, assistant_response_cache, recorder, case):
     """
     Faithfulness: is the Assistant's real response supported by the same
-    context it was given? Reference-free — RAGAS's claim-decomposition +
-    NLI verification, a different methodology from Custom's holistic judge
-    call for the same dimension.
+    context it was given? RAGAS's claim-decomposition + NLI verification.
+    Reads llm_faithfulness.json only.
 
     Some refusal/no-claim answers could in principle decompose into zero
     checkable statements, which RAGAS reports as NaN rather than a 0-1
@@ -52,7 +48,7 @@ def test_faithfulness(assistant_llm_service, ragas_judge_llm, assistant_response
         f"'{case['case_id']}': Faithfulness score {result.value} out of [0, 1] range"
     )
 
-    min_score = case["evaluation"]["ragas"]["faithfulness"]["min_score"]
+    min_score = case["evaluation"]["ragas"]["min_score"]
     assert result.value >= min_score, (
         f"'{case['case_id']}': Faithfulness score {result.value:.3f} "
         f"below minimum {min_score:.3f}"

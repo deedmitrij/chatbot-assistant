@@ -12,36 +12,8 @@
         "prohibited_patterns": ["\\d+\\s*(°|degrees)"],
         "reference_answer": "The pool's heating status and exact temperature are not mentioned in the available information.",
         "evaluation": {
-          "ragas": {
-            "faithfulness": {
-              "skip": true,
-              "skip_reason": "Expected behavior is an absence-of-information response; RAGAS Faithfulness cannot reliably entail absence claims from silent context."
-            },
-            "answer_relevancy": {
-              "skip": true,
-              "skip_reason": "Expected response is a pure absence-of-information refusal, which RAGAS AnswerRelevancy systematically risks hard-zeroing via its noncommittal mechanism."
-            },
-            "factual_correctness": {
-              "min_score": 0.75
-            },
-            "answer_correctness": {
-              "min_score": 0.75
-            }
-          },
           "deepeval": {
-            "faithfulness": {
-              "skip": true,
-              "skip_reason": "Expected behavior is an absence-of-information response; DeepEval Faithfulness extracts 'truths' from the retrieval_context and classifies each actual_output claim against them, so it cannot reliably verify a correct claim of absence when the context is silent on the queried attribute rather than empty."
-            },
-            "hallucination": {},
-            "answer_relevancy": {},
-            "geval_factual_correctness": {},
-            "geval_answer_correctness": {},
-            "geval_negative_constraint": {},
-            "geval_brand_consistency": {
-              "skip": true,
-              "skip_reason": "This case tests correct compliance under missing/restricted information (Negative Constraint), not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
-            }
+            "min_score": 0.85
           }
         }
       }
@@ -60,32 +32,8 @@
         "prohibited_patterns": ["\\$\\d+"],
         "reference_answer": "The cost of a couples massage is not specified in the available information.",
         "evaluation": {
-          "ragas": {
-            "faithfulness": {
-              "min_score": 0.60
-            },
-            "answer_relevancy": {
-              "skip": true,
-              "skip_reason": "Expected response is a pure absence-of-information refusal, which RAGAS AnswerRelevancy systematically risks hard-zeroing via its noncommittal mechanism."
-            },
-            "factual_correctness": {
-              "min_score": 0.75
-            },
-            "answer_correctness": {
-              "min_score": 0.75
-            }
-          },
           "deepeval": {
-            "faithfulness": {},
-            "hallucination": {},
-            "answer_relevancy": {},
-            "geval_factual_correctness": {},
-            "geval_answer_correctness": {},
-            "geval_negative_constraint": {},
-            "geval_brand_consistency": {
-              "skip": true,
-              "skip_reason": "This case tests correct compliance under missing/restricted information (Negative Constraint), not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
-            }
+            "min_score": 0.85
           }
         }
       }
@@ -104,32 +52,8 @@
         "prohibited_patterns": ["\\d+\\s*(spaces|spots)"],
         "reference_answer": "The number of available parking spaces is not specified in the available information.",
         "evaluation": {
-          "ragas": {
-            "faithfulness": {
-              "min_score": 0.60
-            },
-            "answer_relevancy": {
-              "skip": true,
-              "skip_reason": "Expected response is a pure absence-of-information refusal, which RAGAS AnswerRelevancy systematically risks hard-zeroing via its noncommittal mechanism."
-            },
-            "factual_correctness": {
-              "min_score": 0.75
-            },
-            "answer_correctness": {
-              "min_score": 0.75
-            }
-          },
           "deepeval": {
-            "faithfulness": {},
-            "hallucination": {},
-            "answer_relevancy": {},
-            "geval_factual_correctness": {},
-            "geval_answer_correctness": {},
-            "geval_negative_constraint": {},
-            "geval_brand_consistency": {
-              "skip": true,
-              "skip_reason": "This case tests correct compliance under missing/restricted information (Negative Constraint), not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
-            }
+            "min_score": 0.85
           }
         }
       }
@@ -149,31 +73,8 @@
         "prohibited_patterns": ["\\$(?!30\\b)\\d+"],
         "reference_answer": "A 6 PM late check-out option is not mentioned; only late check-out until 2 PM for $30 is specified.",
         "evaluation": {
-          "ragas": {
-            "faithfulness": {
-              "min_score": 0.60
-            },
-            "answer_relevancy": {
-              "min_score": 0.60
-            },
-            "factual_correctness": {
-              "min_score": 0.75
-            },
-            "answer_correctness": {
-              "min_score": 0.45
-            }
-          },
           "deepeval": {
-            "faithfulness": {},
-            "hallucination": {},
-            "answer_relevancy": {},
-            "geval_factual_correctness": {},
-            "geval_answer_correctness": {},
-            "geval_negative_constraint": {},
-            "geval_brand_consistency": {
-              "skip": true,
-              "skip_reason": "This case tests correct compliance under missing/restricted information (Negative Constraint), not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
-            }
+            "min_score": 0.85
           }
         }
       }

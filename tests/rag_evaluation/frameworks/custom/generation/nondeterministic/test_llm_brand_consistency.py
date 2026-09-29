@@ -1,12 +1,18 @@
 import re
 import pytest
-from tests.rag_evaluation.frameworks.custom.generation.nondeterministic.conftest import get_all_test_cases_from_file
+from config import JUDGE_MODEL
+from tests.rag_evaluation.frameworks.helpers import get_all_generation_test_cases_from_file, get_or_generate_response
+from tests.rag_evaluation.frameworks.custom.generation.nondeterministic.conftest import (
+    record_custom_generation_result,
+)
 
 pytestmark = pytest.mark.live
 
+SUITE_FILE = "llm_brand_consistency.json"
 
-@pytest.mark.parametrize("test_case", get_all_test_cases_from_file("llm_brand_consistency.json"), ids=lambda x: x["name"])
-def test_llm_brand_consistency(llm_as_a_hotel_assistant, llm_as_a_judge, test_case):
+
+@pytest.mark.parametrize("test_case", get_all_generation_test_cases_from_file(SUITE_FILE), ids=lambda x: x["name"])
+def test_llm_brand_consistency(assistant_llm_service, llm_as_a_judge, assistant_response_cache, recorder, test_case):
     """
     Brand/Persona Consistency: the assistant must speak as the hotel itself
     (first-person plural, "Official Hotel Assistant" identity) and never
@@ -27,32 +33,50 @@ def test_llm_brand_consistency(llm_as_a_hotel_assistant, llm_as_a_judge, test_ca
     3. (semantic, via judge) The tone and phrasing genuinely read as an
        in-character hotel voice rather than a generic assistant.
     """
-    assistant_response = llm_as_a_hotel_assistant.get_answer(
-        query=test_case["query"],
-        context=test_case["context"]
-    )
+    assistant_response = get_or_generate_response(assistant_response_cache, assistant_llm_service, test_case)
 
     bot_answer = assistant_response["answer"]
     bot_confidence = assistant_response["confidence"]
 
-    assert bot_confidence == test_case["expected_confidence"], (
+    confidence_matches = bot_confidence == test_case["expected_confidence"]
+    if not confidence_matches:
+        record_custom_generation_result(
+            recorder=recorder, file_name=SUITE_FILE, test_case=test_case, passed=False,
+            assistant_answer=bot_answer, actual_confidence=bot_confidence,
+            metadata={"failure_stage": "expected_confidence"},
+        )
+    assert confidence_matches, (
         f"Confidence calibration failed for '{test_case['name']}': "
         f"expected {test_case['expected_confidence']}, got {bot_confidence}. "
         f"Answer: {bot_answer}"
     )
 
-    for fact in test_case.get("required_facts", []):
-        assert fact.lower() in bot_answer.lower(), (
-            f"'{test_case['name']}' is missing required fact '{fact}'.\n"
-            f"Bot Answered: {bot_answer}"
+    required_facts = test_case.get("required_facts", [])
+    missing_facts = [fact for fact in required_facts if fact.lower() not in bot_answer.lower()]
+    if missing_facts:
+        record_custom_generation_result(
+            recorder=recorder, file_name=SUITE_FILE, test_case=test_case, passed=False,
+            assistant_answer=bot_answer, actual_confidence=bot_confidence,
+            metadata={"failure_stage": "required_facts", "missing_facts": missing_facts},
         )
+    assert not missing_facts, (
+        f"'{test_case['name']}' is missing required fact(s) {missing_facts}.\n"
+        f"Bot Answered: {bot_answer}"
+    )
 
-    for pattern in test_case.get("prohibited_patterns", []):
-        assert not re.search(pattern, bot_answer, re.IGNORECASE), (
-            f"'{test_case['name']}' broke persona with a prohibited phrase "
-            f"matching '{pattern}'.\n"
-            f"Bot Answered: {bot_answer}"
+    prohibited_patterns = test_case.get("prohibited_patterns", [])
+    matched_patterns = [p for p in prohibited_patterns if re.search(p, bot_answer, re.IGNORECASE)]
+    if matched_patterns:
+        record_custom_generation_result(
+            recorder=recorder, file_name=SUITE_FILE, test_case=test_case, passed=False,
+            assistant_answer=bot_answer, actual_confidence=bot_confidence,
+            metadata={"failure_stage": "prohibited_patterns", "matched_patterns": matched_patterns},
         )
+    assert not matched_patterns, (
+        f"'{test_case['name']}' broke persona with a prohibited phrase "
+        f"matching {matched_patterns}.\n"
+        f"Bot Answered: {bot_answer}"
+    )
 
     judge_query = f"""
     Evaluate the following interaction for TONE, IDENTITY, and HOSPITALITY:
@@ -68,6 +92,11 @@ def test_llm_brand_consistency(llm_as_a_hotel_assistant, llm_as_a_judge, test_ca
         context=test_case["context"]
     )
 
+    record_custom_generation_result(
+        recorder=recorder, file_name=SUITE_FILE, test_case=test_case, passed=judge_verdict["passed"] is True,
+        assistant_answer=bot_answer, actual_confidence=bot_confidence,
+        judge_reason=judge_verdict["reason"], judge_model=JUDGE_MODEL,
+    )
     assert judge_verdict["passed"] is True, (
         f"Persona check failed: {test_case['name']}\n"
         f"Reason: {judge_verdict['reason']}\n"

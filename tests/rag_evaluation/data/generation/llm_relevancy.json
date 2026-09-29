@@ -15,33 +15,10 @@
         "reference_answer": "Breakfast is served in the Green Garden restaurant, and yes, vegan options are available upon request.",
         "evaluation": {
           "ragas": {
-            "faithfulness": {
-              "min_score": 0.90
-            },
-            "answer_relevancy": {
-              "min_score": 0.50
-            },
-            "factual_correctness": {
-              "min_score": 0.50
-            },
-            "answer_correctness": {
-              "min_score": 0.75
-            }
+            "min_score": 0.50
           },
           "deepeval": {
-            "faithfulness": {},
-            "hallucination": {},
-            "answer_relevancy": {},
-            "geval_factual_correctness": {},
-            "geval_answer_correctness": {},
-            "geval_negative_constraint": {
-              "skip": true,
-              "skip_reason": "Multi-intent factual case with all requested information present in context; no missing-information, restriction, or refusal behavior is being tested here."
-            },
-            "geval_brand_consistency": {
-              "skip": true,
-              "skip_reason": "This case tests factual/informational content, not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
-            }
+            "min_score": 0.70
           }
         }
       },
@@ -54,33 +31,10 @@
         "reference_answer": "The gym is on the 2nd floor. The available information does not specify a fee for gym access.",
         "evaluation": {
           "ragas": {
-            "faithfulness": {
-              "min_score": 0.40
-            },
-            "answer_relevancy": {
-              "min_score": 0.75
-            },
-            "factual_correctness": {
-              "min_score": 0.30
-            },
-            "answer_correctness": {
-              "min_score": 0.45
-            }
+            "min_score": 0.75
           },
           "deepeval": {
-            "faithfulness": {},
-            "hallucination": {},
-            "answer_relevancy": {},
-            "geval_factual_correctness": {},
-            "geval_answer_correctness": {},
-            "geval_negative_constraint": {
-              "skip": true,
-              "skip_reason": "Multi-intent factual case with all requested information present in context; no missing-information, restriction, or refusal behavior is being tested here."
-            },
-            "geval_brand_consistency": {
-              "skip": true,
-              "skip_reason": "This case tests factual/informational content, not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
-            }
+            "min_score": 0.70
           }
         }
       }

@@ -1,11 +1,14 @@
 import pytest
-from tests.rag_evaluation.frameworks.custom.retrieval.conftest import get_all_test_cases_from_file
+from tests.rag_evaluation.frameworks.helpers import get_all_retrieval_test_cases_from_file
+from tests.rag_evaluation.frameworks.custom.retrieval.conftest import record_custom_retrieval_result
 from config import VECTOR_SIMILARITY_THRESHOLD
 
+SUITE_FILE = "distance_stratification.json"
 
-@pytest.mark.parametrize("test_case", get_all_test_cases_from_file("distance_stratification.json"), indirect=True, ids=lambda x: x[1]["name"]
+
+@pytest.mark.parametrize("test_case", get_all_retrieval_test_cases_from_file(SUITE_FILE), indirect=True, ids=lambda c: c["name"]
 )
-def test_distance_stratification(vector_db_service, test_case):
+def test_distance_stratification(vector_db_service, recorder, test_case):
     """
     Concept: distance/threshold calibration — not a ranking metric, a sanity
     check on the raw distance numbers the confidence gate relies on.
@@ -31,9 +34,25 @@ def test_distance_stratification(vector_db_service, test_case):
 
     distance = results['distances'][0][0]
 
-    assert distance < VECTOR_SIMILARITY_THRESHOLD, \
+    below_global_threshold = distance < VECTOR_SIMILARITY_THRESHOLD
+    record_custom_retrieval_result(
+        recorder=recorder, file_name=SUITE_FILE, case_name=test_case["name"], metric_name="vector_similarity_threshold",
+        score=distance, threshold=VECTOR_SIMILARITY_THRESHOLD, passed=below_global_threshold, query=test_case["query"],
+        retrieved_contexts=results.get("documents", [None])[0], retrieved_ids=results['ids'][0],
+    )
+    assert below_global_threshold, \
         f"Distance {distance:.4f} unexpectedly crossed VECTOR_SIMILARITY_THRESHOLD ({VECTOR_SIMILARITY_THRESHOLD})"
 
     custom_evaluation = test_case["evaluation"]["custom"]
-    assert custom_evaluation["min_dist"] <= distance <= custom_evaluation["max_dist"], \
-        f"Wrong distance for '{test_case['expected_action']}' action!"
+    band_ok = custom_evaluation["min_dist"] <= distance <= custom_evaluation["max_dist"]
+    record_custom_retrieval_result(
+        recorder=recorder, file_name=SUITE_FILE, case_name=test_case["name"], metric_name="distance_stratification",
+        score=distance, threshold=custom_evaluation["max_dist"], passed=band_ok, query=test_case["query"],
+        retrieved_contexts=results.get("documents", [None])[0], retrieved_ids=results['ids'][0],
+        metadata={
+            "min_dist": custom_evaluation["min_dist"],
+            "max_dist": custom_evaluation["max_dist"],
+            "expected_action": test_case.get("expected_action"),
+        },
+    )
+    assert band_ok, f"Wrong distance for '{test_case['expected_action']}' action!"

@@ -2,29 +2,26 @@ import pytest
 from deepeval.metrics import ContextualRelevancyMetric
 from deepeval.test_case import LLMTestCase
 
+from tests.rag_evaluation.frameworks.helpers import get_all_retrieval_test_cases_from_file
 from tests.rag_evaluation.frameworks.deepeval.retrieval.conftest import (
-    get_retrieval_deepeval_cases,
     search_retrieval,
     record_retrieval_result,
+    resolve_min_score,
 )
 
 pytestmark = pytest.mark.live
 
 
 @pytest.mark.parametrize(
-    "test_case", get_retrieval_deepeval_cases(), ids=lambda item: item[1]["name"], indirect=True
+    "test_case", get_all_retrieval_test_cases_from_file("top_k_retrieval.json"), ids=lambda c: c["name"], indirect=True
 )
 def test_contextual_relevancy(vector_db_service, deepeval_judge_model, recorder, test_case):
     """
     ContextualRelevancy: are the chunks the real retrieval path returns for
     this query actually relevant to it? Query + retrieved context only -- no
-    generated Assistant response, no reference answer needed. Confirmed by
-    reading the installed metric's source (see the DeepEval architecture
-    audit): actual_output is not in ContextualRelevancyMetric's required
-    params and is never referenced in its scoring, so this runs on the same
-    case population as RAGAS's ContextRelevance without ever calling the
-    Assistant -- a DeepEval-native, different-algorithm counterpart to the
-    same retrieval_relevance quality dimension.
+    generated Assistant response, no reference answer needed. DeepEval-native
+    counterpart to RAGAS's ContextRelevance and to Custom's HitRate@K. Reads
+    top_k_retrieval.json only.
     """
     # Retrieval preparation
     retrieved_contexts, retrieved_ids = search_retrieval(vector_db_service, test_case)
@@ -58,7 +55,7 @@ def test_contextual_relevancy(vector_db_service, deepeval_judge_model, recorder,
         f"'{test_case['name']}': ContextualRelevancy score {metric.score} out of [0, 1] range"
     )
 
-    min_score = test_case["evaluation"]["deepeval"]["contextual_relevancy"].get("min_score")
+    min_score = resolve_min_score(test_case["evaluation"]["deepeval"], "contextual_relevancy")
     if min_score is not None:
         assert metric.score >= min_score, (
             f"'{test_case['name']}': ContextualRelevancy {metric.score} regressed below min_score {min_score}"

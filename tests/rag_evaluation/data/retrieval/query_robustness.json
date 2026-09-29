@@ -49,16 +49,6 @@
         "evaluation": {
           "custom": {
             "max_distance": 0.55
-          },
-          "ragas": {
-            "context_relevance": {"min_score": 0.90},
-            "context_precision_with_reference": {"min_score": 0.90},
-            "context_recall": {"min_score": 0.90}
-          },
-          "deepeval": {
-            "contextual_relevancy": {},
-            "contextual_precision": {},
-            "contextual_recall": {}
           }
         }
       },
@@ -71,16 +61,6 @@
         "evaluation": {
           "custom": {
             "max_distance": 0.65
-          },
-          "ragas": {
-            "context_relevance": {"min_score": 0.90},
-            "context_precision_with_reference": {"min_score": 0.90},
-            "context_recall": {"min_score": 0.90}
-          },
-          "deepeval": {
-            "contextual_relevancy": {},
-            "contextual_precision": {},
-            "contextual_recall": {}
           }
         }
       },
@@ -93,16 +73,6 @@
         "evaluation": {
           "custom": {
             "max_distance": 0.75
-          },
-          "ragas": {
-            "context_relevance": {"min_score": 0.90},
-            "context_precision_with_reference": {"min_score": 0.30},
-            "context_recall": {"min_score": 0.90}
-          },
-          "deepeval": {
-            "contextual_relevancy": {},
-            "contextual_precision": {},
-            "contextual_recall": {}
           }
         }
       },
@@ -115,16 +85,6 @@
         "evaluation": {
           "custom": {
             "max_distance": 0.55
-          },
-          "ragas": {
-            "context_relevance": {"min_score": 0.90},
-            "context_precision_with_reference": {"min_score": 0.90},
-            "context_recall": {"min_score": 0.90}
-          },
-          "deepeval": {
-            "contextual_relevancy": {},
-            "contextual_precision": {},
-            "contextual_recall": {}
           }
         }
       }
