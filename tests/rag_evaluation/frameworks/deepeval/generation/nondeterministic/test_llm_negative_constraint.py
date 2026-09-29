@@ -2,10 +2,10 @@ import pytest
 from deepeval.metrics import GEval
 from deepeval.test_case import LLMTestCase, SingleTurnParams
 
+from tests.rag_evaluation.frameworks.helpers import get_all_generation_test_cases_from_file, get_or_generate_response
 from tests.rag_evaluation.frameworks.deepeval.generation.conftest import (
-    get_generation_deepeval_cases,
-    get_or_generate_response,
     record_generation_result,
+    resolve_min_score,
 )
 
 pytestmark = pytest.mark.live
@@ -28,7 +28,7 @@ NEGATIVE_CONSTRAINT_CRITERIA = (
 
 
 @pytest.mark.parametrize(
-    "case", get_generation_deepeval_cases("geval_negative_constraint"), ids=lambda c: c["case_id"]
+    "case", get_all_generation_test_cases_from_file("llm_negative_constraint.json"), ids=lambda c: c["case_id"]
 )
 def test_geval_negative_constraint(
     assistant_llm_service, deepeval_judge_model, assistant_response_cache, recorder, case
@@ -40,6 +40,7 @@ def test_geval_negative_constraint(
     llm_negative_constraint judge-verdict check -- same refusal quality
     dimension, different mechanism (GEval's single holistic rating against
     an explicit criterion, rather than a free-form judge_verdict pass/fail).
+    Reads llm_negative_constraint.json only.
 
     CONTEXT is included in evaluation_params (beyond the INPUT/ACTUAL_OUTPUT
     the task prefers by default) because the criterion explicitly turns on
@@ -50,18 +51,6 @@ def test_geval_negative_constraint(
     (llm_negative_constraint.json's "Empty Context Test") gracefully -- it
     only fails structurally when required_output is missing, not on an
     empty list -- unlike HallucinationMetric's QAG loop.
-
-    Applicability is intentionally NOT limited to llm_negative_constraint.json's
-    4 cases: llm_hallucination.json's 4 "Hallucination Trap" cases are also
-    included, because their own `criteria` text ("must NOT invent a
-    temperature/price/count/fee") is squarely a "not converting unavailable
-    information into an unsupported positive claim" scenario -- one of this
-    metric's explicitly named behaviors, not a stretch. Cases from
-    llm_correctness.json that also involve a denial (e.g. the pet-exclusion
-    case) are deliberately excluded: there, all the information needed to
-    answer is already present in context, so the test is about correctly
-    *deriving a conclusion* (Correctness), not about behavior under missing
-    or restricted information (Negative Constraint).
     """
     # Assistant response preparation
     assistant_result = get_or_generate_response(assistant_response_cache, assistant_llm_service, case)
@@ -102,7 +91,7 @@ def test_geval_negative_constraint(
         f"'{case['case_id']}': GEval Negative Constraint score {metric.score} out of [0, 1] range"
     )
 
-    min_score = case["evaluation"]["deepeval"]["geval_negative_constraint"].get("min_score")
+    min_score = resolve_min_score(case["evaluation"]["deepeval"], "geval_negative_constraint")
     if min_score is not None:
         assert metric.score >= min_score, (
             f"'{case['case_id']}': GEval Negative Constraint {metric.score:.3f} below minimum {min_score:.3f}"

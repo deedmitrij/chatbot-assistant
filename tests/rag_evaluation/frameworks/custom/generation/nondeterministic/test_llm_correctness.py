@@ -1,11 +1,17 @@
 import pytest
-from tests.rag_evaluation.frameworks.custom.generation.nondeterministic.conftest import get_all_test_cases_from_file
+from config import JUDGE_MODEL
+from tests.rag_evaluation.frameworks.helpers import get_all_generation_test_cases_from_file, get_or_generate_response
+from tests.rag_evaluation.frameworks.custom.generation.nondeterministic.conftest import (
+    record_custom_generation_result,
+)
 
 pytestmark = pytest.mark.live
 
+SUITE_FILE = "llm_correctness.json"
 
-@pytest.mark.parametrize("test_case", get_all_test_cases_from_file("llm_correctness.json"), ids=lambda x: x["name"])
-def test_llm_correctness(llm_as_a_hotel_assistant, llm_as_a_judge, test_case):
+
+@pytest.mark.parametrize("test_case", get_all_generation_test_cases_from_file(SUITE_FILE), ids=lambda x: x["name"])
+def test_llm_correctness(assistant_llm_service, llm_as_a_judge, assistant_response_cache, recorder, test_case):
     """
     Correctness: the answer must be the right *derived* conclusion, not just
     a restatement of a context fact. This covers applying a stated policy
@@ -24,25 +30,36 @@ def test_llm_correctness(llm_as_a_hotel_assistant, llm_as_a_judge, test_case):
     3. (semantic, via judge) The reasoning itself is correct — the right
        conclusion was actually reached, not just the right numbers quoted.
     """
-    assistant_response = llm_as_a_hotel_assistant.get_answer(
-        query=test_case["query"],
-        context=test_case["context"]
-    )
+    assistant_response = get_or_generate_response(assistant_response_cache, assistant_llm_service, test_case)
 
     bot_answer = assistant_response["answer"]
     bot_confidence = assistant_response["confidence"]
 
-    assert bot_confidence == test_case["expected_confidence"], (
+    confidence_matches = bot_confidence == test_case["expected_confidence"]
+    if not confidence_matches:
+        record_custom_generation_result(
+            recorder=recorder, file_name=SUITE_FILE, test_case=test_case, passed=False,
+            assistant_answer=bot_answer, actual_confidence=bot_confidence,
+            metadata={"failure_stage": "expected_confidence"},
+        )
+    assert confidence_matches, (
         f"Confidence calibration failed for '{test_case['name']}': "
         f"expected {test_case['expected_confidence']}, got {bot_confidence}. "
         f"Answer: {bot_answer}"
     )
 
-    for fact in test_case.get("required_facts", []):
-        assert fact.lower() in bot_answer.lower(), (
-            f"'{test_case['name']}' is missing required fact '{fact}'.\n"
-            f"Bot Answered: {bot_answer}"
+    required_facts = test_case.get("required_facts", [])
+    missing_facts = [fact for fact in required_facts if fact.lower() not in bot_answer.lower()]
+    if missing_facts:
+        record_custom_generation_result(
+            recorder=recorder, file_name=SUITE_FILE, test_case=test_case, passed=False,
+            assistant_answer=bot_answer, actual_confidence=bot_confidence,
+            metadata={"failure_stage": "required_facts", "missing_facts": missing_facts},
         )
+    assert not missing_facts, (
+        f"'{test_case['name']}' is missing required fact(s) {missing_facts}.\n"
+        f"Bot Answered: {bot_answer}"
+    )
 
     judge_query = f"""
     Please evaluate the following interaction for CORRECTNESS OF REASONING:
@@ -58,6 +75,11 @@ def test_llm_correctness(llm_as_a_hotel_assistant, llm_as_a_judge, test_case):
         context=test_case["context"]
     )
 
+    record_custom_generation_result(
+        recorder=recorder, file_name=SUITE_FILE, test_case=test_case, passed=judge_verdict["passed"] is True,
+        assistant_answer=bot_answer, actual_confidence=bot_confidence,
+        judge_reason=judge_verdict["reason"], judge_model=JUDGE_MODEL,
+    )
     assert judge_verdict["passed"] is True, (
         f"Correctness check failed: {test_case['name']}\n"
         f"Reason: {judge_verdict['reason']}\n"

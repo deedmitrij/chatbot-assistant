@@ -1,8 +1,8 @@
 import pytest
 from ragas.metrics.collections import ContextRelevance
 
+from tests.rag_evaluation.frameworks.helpers import get_all_retrieval_test_cases_from_file
 from tests.rag_evaluation.frameworks.ragas.retrieval.conftest import (
-    get_retrieval_ragas_cases,
     search_retrieval,
     record_retrieval_result,
 )
@@ -11,15 +11,14 @@ pytestmark = pytest.mark.live
 
 
 @pytest.mark.parametrize(
-    "test_case", get_retrieval_ragas_cases(), ids=lambda item: item[1]["name"], indirect=True
+    "test_case", get_all_retrieval_test_cases_from_file("top_k_retrieval.json"), ids=lambda c: c["name"], indirect=True
 )
 def test_context_relevance(vector_db_service, ragas_judge_llm, recorder, test_case):
     """
     Context Relevance: are the chunks the real retrieval path returns for this
     query actually relevant to it? Query + retrieved context only — no
-    generated Assistant response, no reference answer needed — so this runs
-    for every RAGAS-eligible case, including the multi-relevant/composite-
-    answer ones that ContextPrecisionWithReference/ContextRecall skip.
+    generated Assistant response, no reference answer needed. RAGAS-native
+    counterpart to Custom's HitRate@K. Reads top_k_retrieval.json only.
     """
     # Retrieval data preparation
     retrieved_contexts, retrieved_ids = search_retrieval(vector_db_service, test_case)
@@ -49,7 +48,7 @@ def test_context_relevance(vector_db_service, ragas_judge_llm, recorder, test_ca
         f"'{test_case['name']}': ContextRelevance score {result.value} out of [0, 1] range"
     )
 
-    min_score = test_case["evaluation"]["ragas"]["context_relevance"]["min_score"]
+    min_score = test_case["evaluation"]["ragas"]["min_score"]
     assert result.value >= min_score, (
         f"'{test_case['name']}': ContextRelevance {result.value} regressed below min_score {min_score}"
     )

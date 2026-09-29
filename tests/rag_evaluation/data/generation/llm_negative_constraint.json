@@ -11,32 +11,8 @@
         "expected_confidence": false,
         "reference_answer": "Information about the business lunch menu is not available in the provided details.",
         "evaluation": {
-          "ragas": {
-            "faithfulness": {
-              "min_score": 0.60
-            },
-            "answer_relevancy": {
-              "skip": true,
-              "skip_reason": "Correct expected behavior is to state that information is unavailable, which RAGAS AnswerRelevancy systematically risks hard-zeroing via its noncommittal mechanism."
-            },
-            "factual_correctness": {
-              "min_score": 0.75
-            },
-            "answer_correctness": {
-              "min_score": 0.75
-            }
-          },
           "deepeval": {
-            "faithfulness": {},
-            "hallucination": {},
-            "answer_relevancy": {},
-            "geval_factual_correctness": {},
-            "geval_answer_correctness": {},
-            "geval_negative_constraint": {},
-            "geval_brand_consistency": {
-              "skip": true,
-              "skip_reason": "This case tests correct compliance under missing/restricted information (Negative Constraint), not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
-            }
+            "min_score": 0.85
           }
         }
       }
@@ -54,31 +30,8 @@
         "expected_confidence": false,
         "reference_answer": "Flight booking is not a service covered by the available information.",
         "evaluation": {
-          "ragas": {
-            "faithfulness": {
-              "min_score": 0.30
-            },
-            "answer_relevancy": {
-              "min_score": 0.50
-            },
-            "factual_correctness": {
-              "min_score": 0.50
-            },
-            "answer_correctness": {
-              "min_score": 0.75
-            }
-          },
           "deepeval": {
-            "faithfulness": {},
-            "hallucination": {},
-            "answer_relevancy": {},
-            "geval_factual_correctness": {},
-            "geval_answer_correctness": {},
-            "geval_negative_constraint": {},
-            "geval_brand_consistency": {
-              "skip": true,
-              "skip_reason": "This case tests correct compliance under missing/restricted information (Negative Constraint), not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
-            }
+            "min_score": 0.85
           }
         }
       }
@@ -94,39 +47,8 @@
         "expected_confidence": false,
         "reference_answer": "No information about check-in rules is available.",
         "evaluation": {
-          "ragas": {
-            "faithfulness": {
-              "skip": true,
-              "skip_reason": "Faithfulness requires supporting context; this scenario intentionally has empty context."
-            },
-            "answer_relevancy": {
-              "skip": true,
-              "skip_reason": "Scenario intentionally has no supporting information and expects an absence-of-information response; AnswerRelevancy's noncommittal zeroing makes the metric unsuitable as a quality gate."
-            },
-            "factual_correctness": {
-              "min_score": 0.75
-            },
-            "answer_correctness": {
-              "min_score": 0.75
-            }
-          },
           "deepeval": {
-            "faithfulness": {
-              "skip": true,
-              "skip_reason": "Faithfulness requires non-empty retrieval_context to extract 'truths' from before any actual_output claim can be verified against them; this scenario intentionally has empty context, same structural dependency as RAGAS Faithfulness."
-            },
-            "hallucination": {
-              "skip": true,
-              "skip_reason": "Confirmed from source: with an empty context list, HallucinationMetric's QAG loop generates zero verdicts, and score_qag_verdicts() returns its empty_score default of 1.0 regardless of the actual_output's quality -- a trivial, non-measuring pass, not a meaningful score."
-            },
-            "answer_relevancy": {},
-            "geval_factual_correctness": {},
-            "geval_answer_correctness": {},
-            "geval_negative_constraint": {},
-            "geval_brand_consistency": {
-              "skip": true,
-              "skip_reason": "This case tests correct compliance under missing/restricted information (Negative Constraint), not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
-            }
+            "min_score": 0.85
           }
         }
       }
@@ -144,32 +66,8 @@
         "expected_confidence": false,
         "reference_answer": "The available information does not confirm whether there is an on-site sushi restaurant or its dinner hours; only a rooftop bar and an in-house bakery are mentioned.",
         "evaluation": {
-          "ragas": {
-            "faithfulness": {
-              "min_score": 0.60
-            },
-            "answer_relevancy": {
-              "skip": true,
-              "skip_reason": "Expected behavior is to decline an unconfirmed claim; RAGAS AnswerRelevancy can hard-zero this refusal pattern through noncommittal classification."
-            },
-            "factual_correctness": {
-              "min_score": 0.50
-            },
-            "answer_correctness": {
-              "min_score": 0.45
-            }
-          },
           "deepeval": {
-            "faithfulness": {},
-            "hallucination": {},
-            "answer_relevancy": {},
-            "geval_factual_correctness": {},
-            "geval_answer_correctness": {},
-            "geval_negative_constraint": {},
-            "geval_brand_consistency": {
-              "skip": true,
-              "skip_reason": "This case tests correct compliance under missing/restricted information (Negative Constraint), not the Assistant's hotel-brand identity, tone, or persona; brand/persona consistency is evaluated only on the dedicated llm_brand_consistency.json scenarios."
-            }
+            "min_score": 0.85
           }
         }
       }

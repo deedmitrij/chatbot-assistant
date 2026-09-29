@@ -1,11 +1,17 @@
 import pytest
-from tests.rag_evaluation.frameworks.custom.generation.nondeterministic.conftest import get_all_test_cases_from_file
+from config import JUDGE_MODEL
+from tests.rag_evaluation.frameworks.helpers import get_all_generation_test_cases_from_file, get_or_generate_response
+from tests.rag_evaluation.frameworks.custom.generation.nondeterministic.conftest import (
+    record_custom_generation_result,
+)
 
 pytestmark = pytest.mark.live
 
+SUITE_FILE = "llm_negative_constraint.json"
 
-@pytest.mark.parametrize("test_case", get_all_test_cases_from_file("llm_negative_constraint.json"), ids=lambda x: x["name"])
-def test_llm_negative_constraint(llm_as_a_hotel_assistant, llm_as_a_judge, test_case):
+
+@pytest.mark.parametrize("test_case", get_all_generation_test_cases_from_file(SUITE_FILE), ids=lambda x: x["name"])
+def test_llm_negative_constraint(assistant_llm_service, llm_as_a_judge, assistant_response_cache, recorder, test_case):
     """
     Refusal/Ignorance: when the query's topic is not addressed by the given
     context at all — an unrelated hotel question, a request entirely outside
@@ -28,15 +34,19 @@ def test_llm_negative_constraint(llm_as_a_hotel_assistant, llm_as_a_judge, test_
     "correctly admitting ignorance" has no single exact literal to check
     for, so it stays entirely a judge responsibility beyond confidence.
     """
-    assistant_response = llm_as_a_hotel_assistant.get_answer(
-        query=test_case["query"],
-        context=test_case["context"]
-    )
+    assistant_response = get_or_generate_response(assistant_response_cache, assistant_llm_service, test_case)
 
     bot_answer = assistant_response["answer"]
     bot_confidence = assistant_response["confidence"]
 
-    assert bot_confidence == test_case["expected_confidence"], (
+    confidence_matches = bot_confidence == test_case["expected_confidence"]
+    if not confidence_matches:
+        record_custom_generation_result(
+            recorder=recorder, file_name=SUITE_FILE, test_case=test_case, passed=False,
+            assistant_answer=bot_answer, actual_confidence=bot_confidence,
+            metadata={"failure_stage": "expected_confidence"},
+        )
+    assert confidence_matches, (
         f"Confidence calibration failed for '{test_case['name']}': "
         f"expected {test_case['expected_confidence']}, got {bot_confidence}. "
         f"Answer: {bot_answer}"
@@ -56,6 +66,11 @@ def test_llm_negative_constraint(llm_as_a_hotel_assistant, llm_as_a_judge, test_
         context=test_case["context"]
     )
 
+    record_custom_generation_result(
+        recorder=recorder, file_name=SUITE_FILE, test_case=test_case, passed=judge_verdict["passed"] is True,
+        assistant_answer=bot_answer, actual_confidence=bot_confidence,
+        judge_reason=judge_verdict["reason"], judge_model=JUDGE_MODEL,
+    )
     assert judge_verdict["passed"] is True, (
         f"Negative Constraint failed: {test_case['name']}\n"
         f"Reason: {judge_verdict['reason']}\n"

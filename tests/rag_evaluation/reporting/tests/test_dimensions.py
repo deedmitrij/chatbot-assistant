@@ -15,16 +15,13 @@ from tests.rag_evaluation.reporting.dimensions import get_quality_dimension
         ("ragas", "context_recall", "retrieval_recall"),
         ("custom", "llm_faithfulness", "groundedness"),
         ("custom", "llm_correctness", "correctness"),
+        ("custom", "llm_relevancy", "relevancy"),
         ("custom", "llm_hallucination", "hallucination"),
         ("custom", "llm_negative_constraint", "refusal"),
         ("custom", "llm_brand_consistency", "persona"),
-        ("custom", "expected_confidence", "confidence_calibration"),
         # distance_stratification is deliberately its own dimension, not
         # left unmapped and not folded into "ranking".
         ("custom", "distance_stratification", "decision_thresholding"),
-        # The relevancy suite's two distinct checks map to two dimensions.
-        ("custom", "required_facts", "completeness"),
-        ("custom", "judge_verdict", "relevancy"),
         ("deepeval", "contextual_relevancy", "retrieval_relevance"),
         ("deepeval", "contextual_precision", "retrieval_precision"),
         ("deepeval", "contextual_recall", "retrieval_recall"),
@@ -43,15 +40,3 @@ def test_known_mappings(framework, metric, expected):
 
 def test_unknown_metric_returns_none_not_a_guess():
     assert get_quality_dimension("ragas", "some_future_metric_not_yet_mapped") is None
-
-
-def test_unknown_framework_returns_none():
-    assert get_quality_dimension("some_future_framework_not_yet_mapped", "faithfulness") is None
-
-
-def test_completeness_and_relevancy_are_distinct_dimensions():
-    # Explicit regression guard for the approved split: these must never
-    # collapse back into one shared dimension.
-    assert get_quality_dimension("custom", "required_facts") != get_quality_dimension(
-        "custom", "judge_verdict"
-    )

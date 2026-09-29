@@ -35,15 +35,10 @@ QUALITY_DIMENSIONS = {
         "distance_stratification": "decision_thresholding",
         "llm_faithfulness": "groundedness",
         "llm_correctness": "correctness",
-        # The relevancy suite's two distinct checks map to two different
-        # dimensions, recorded as two separate metric values for the same
-        # suite/case rather than one ambiguous row:
-        "required_facts": "completeness",  # deterministic multi-intent coverage check
-        "judge_verdict": "relevancy",  # holistic judge verdict
+        "llm_relevancy": "relevancy",
         "llm_hallucination": "hallucination",
         "llm_negative_constraint": "refusal",
         "llm_brand_consistency": "persona",
-        "expected_confidence": "confidence_calibration",
     },
     "deepeval": {
         "contextual_relevancy": "retrieval_relevance",

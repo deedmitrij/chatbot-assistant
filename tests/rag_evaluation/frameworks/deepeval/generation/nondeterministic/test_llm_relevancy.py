@@ -2,40 +2,25 @@ import pytest
 from deepeval.metrics import AnswerRelevancyMetric
 from deepeval.test_case import LLMTestCase
 
+from tests.rag_evaluation.frameworks.helpers import get_all_generation_test_cases_from_file, get_or_generate_response
 from tests.rag_evaluation.frameworks.deepeval.generation.conftest import (
-    get_generation_deepeval_cases,
-    get_or_generate_response,
     record_generation_result,
+    resolve_min_score,
 )
 
 pytestmark = pytest.mark.live
 
 
 @pytest.mark.parametrize(
-    "case", get_generation_deepeval_cases("answer_relevancy"), ids=lambda c: c["case_id"]
+    "case", get_all_generation_test_cases_from_file("llm_relevancy.json"), ids=lambda c: c["case_id"]
 )
 def test_answer_relevancy(assistant_llm_service, deepeval_judge_model, assistant_response_cache, recorder, case):
     """
     AnswerRelevancy: does the Assistant's real response actually address the
     user's question? Reference-free and context-free -- AnswerRelevancyMetric's
-    required params are only input/actual_output (confirmed from source),
-    so no retrieval_context/expected_output is needed or set.
-
-    Applicability deliberately runs on all 21 cases with zero skips, NOT a
-    copy of RAGAS AnswerRelevancy's skip list. Two reasons: (1) nothing
-    required is ever missing -- every case has input and actual_output, so
-    there is no structural reason to exclude any of them; (2) "does this
-    answer address the question" is a meaningful, distinct axis even for
-    refusal/absence-of-information and persona/tone cases -- it is exactly
-    the axis RAGAS's own AnswerRelevancy got wrong on at least one case in
-    this dataset (the parrot-exclusion case in llm_correctness.json, where a
-    correct, highly-similar denial was hard-zeroed by RAGAS's noncommittal
-    classifier). Deliberately including the same refusal/absence-of-info
-    cases here, unfiltered, is what makes that RAGAS-vs-DeepEval comparison
-    possible on identical cases instead of a RAGAS-filtered subset.
-    DeepEval's algorithm has no equivalent explicit noncommittal classifier
-    (confirmed in the DeepEval architecture audit) -- whether it reproduces
-    or avoids RAGAS's false-zero is exactly what running it here measures.
+    required params are only input/actual_output. DeepEval-native counterpart
+    to RAGAS's AnswerRelevancy -- same relevancy quality dimension, no
+    equivalent noncommittal-answer classifier. Reads llm_relevancy.json only.
     """
     # Assistant response preparation
     assistant_result = get_or_generate_response(assistant_response_cache, assistant_llm_service, case)
@@ -69,7 +54,7 @@ def test_answer_relevancy(assistant_llm_service, deepeval_judge_model, assistant
         f"'{case['case_id']}': AnswerRelevancy score {metric.score} out of [0, 1] range"
     )
 
-    min_score = case["evaluation"]["deepeval"]["answer_relevancy"].get("min_score")
+    min_score = resolve_min_score(case["evaluation"]["deepeval"], "answer_relevancy")
     if min_score is not None:
         assert metric.score >= min_score, (
             f"'{case['case_id']}': AnswerRelevancy {metric.score:.3f} below minimum {min_score:.3f}"

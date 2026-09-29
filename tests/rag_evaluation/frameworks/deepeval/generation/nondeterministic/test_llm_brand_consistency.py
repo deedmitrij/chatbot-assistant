@@ -2,10 +2,10 @@ import pytest
 from deepeval.metrics import GEval
 from deepeval.test_case import LLMTestCase, SingleTurnParams
 
+from tests.rag_evaluation.frameworks.helpers import get_all_generation_test_cases_from_file, get_or_generate_response
 from tests.rag_evaluation.frameworks.deepeval.generation.conftest import (
-    get_generation_deepeval_cases,
-    get_or_generate_response,
     record_generation_result,
+    resolve_min_score,
 )
 
 pytestmark = pytest.mark.live
@@ -27,7 +27,7 @@ BRAND_CONSISTENCY_CRITERIA = (
 
 
 @pytest.mark.parametrize(
-    "case", get_generation_deepeval_cases("geval_brand_consistency"), ids=lambda c: c["case_id"]
+    "case", get_all_generation_test_cases_from_file("llm_brand_consistency.json"), ids=lambda c: c["case_id"]
 )
 def test_geval_brand_consistency(
     assistant_llm_service, deepeval_judge_model, assistant_response_cache, recorder, case
@@ -37,22 +37,14 @@ def test_geval_brand_consistency(
     voice -- first-person identity, no AI disclaimers, professional tone,
     genuine hospitality? DeepEval-native counterpart to Custom's
     llm_brand_consistency judge-verdict check -- same persona quality
-    dimension, different mechanism.
+    dimension, different mechanism. Reads llm_brand_consistency.json only.
 
     evaluation_params is INPUT/ACTUAL_OUTPUT only -- no EXPECTED_OUTPUT
-    (none of these 4 cases carry a reference_answer, and GEval would raise
+    (none of these cases carry a reference_answer, and GEval would raise
     MissingTestCaseParamsError if it were required) and no CONTEXT (this
     criterion evaluates tone/identity, not factual grounding, so pulling in
     context risks the Judge conflating persona with factual correctness,
     which the criterion explicitly excludes).
-
-    Applicability is intentionally the 4 llm_brand_consistency.json cases
-    only -- not extended to factual-QA cases elsewhere, even ones with warm
-    phrasing, because their primary tested dimension is factual content, not
-    hotel identity/voice. The existing case names ("Identity: ...", "Persona:
-    ...", "Tone: ...") already distinguish the persona/tone subcategories and
-    are preserved as-is through case_name in the reporting record -- no
-    reporting-schema change was needed to keep that distinction visible.
     """
     # Assistant response preparation
     assistant_result = get_or_generate_response(assistant_response_cache, assistant_llm_service, case)
@@ -92,7 +84,7 @@ def test_geval_brand_consistency(
         f"'{case['case_id']}': GEval Brand Consistency score {metric.score} out of [0, 1] range"
     )
 
-    min_score = case["evaluation"]["deepeval"]["geval_brand_consistency"].get("min_score")
+    min_score = resolve_min_score(case["evaluation"]["deepeval"], "geval_brand_consistency")
     if min_score is not None:
         assert metric.score >= min_score, (
             f"'{case['case_id']}': GEval Brand Consistency {metric.score:.3f} below minimum {min_score:.3f}"

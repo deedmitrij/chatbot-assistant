@@ -1,9 +1,12 @@
 import pytest
-from tests.rag_evaluation.frameworks.custom.retrieval.conftest import get_all_test_cases_from_file
+from tests.rag_evaluation.frameworks.helpers import get_all_retrieval_test_cases_from_file
+from tests.rag_evaluation.frameworks.custom.retrieval.conftest import record_custom_retrieval_result
+
+SUITE_FILE = "query_robustness.json"
 
 
-@pytest.mark.parametrize("test_case", get_all_test_cases_from_file("query_robustness.json"), indirect=True, ids=lambda x: x[1]["name"])
-def test_query_robustness(vector_db_service, test_case):
+@pytest.mark.parametrize("test_case", get_all_retrieval_test_cases_from_file(SUITE_FILE), indirect=True, ids=lambda c: c["name"])
+def test_query_robustness(vector_db_service, recorder, test_case):
     """
     Concept: Top-1 accuracy / HitRate@1 — is the single best-ranked result
     the correct document?
@@ -25,5 +28,21 @@ def test_query_robustness(vector_db_service, test_case):
     doc_id = results['ids'][0][0]
     distance = results['distances'][0][0]
 
-    assert doc_id == test_case['expected_id'], "Wrong document!"
-    assert distance <= test_case["evaluation"]["custom"]["max_distance"], "Distance too high!"
+    top1_ok = doc_id == test_case['expected_id']
+    record_custom_retrieval_result(
+        recorder=recorder, file_name=SUITE_FILE, case_name=test_case["name"], metric_name="query_robustness",
+        score=1.0 if top1_ok else 0.0, threshold=None, passed=top1_ok, query=test_case["query"],
+        retrieved_contexts=results.get("documents", [None])[0], expected_ids=[test_case['expected_id']],
+        retrieved_ids=results['ids'][0],
+    )
+    assert top1_ok, "Wrong document!"
+
+    max_distance = test_case["evaluation"]["custom"]["max_distance"]
+    distance_ok = distance <= max_distance
+    record_custom_retrieval_result(
+        recorder=recorder, file_name=SUITE_FILE, case_name=test_case["name"], metric_name="max_distance",
+        score=distance, threshold=max_distance, passed=distance_ok, query=test_case["query"],
+        retrieved_contexts=results.get("documents", [None])[0], expected_ids=[test_case['expected_id']],
+        retrieved_ids=results['ids'][0],
+    )
+    assert distance_ok, "Distance too high!"
