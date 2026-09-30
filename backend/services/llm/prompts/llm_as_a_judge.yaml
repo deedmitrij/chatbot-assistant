@@ -32,14 +32,22 @@
         1. Use JSON boolean 'true' ONLY if ALL applicable dimensions pass: (a) Groundedness/factual correctness, (b) Relevancy/completeness/user-intent coverage, (c) Tone/Persona/Brand Voice, and (d) Confidence consistency with the CONTEXT per section 2.
         2. Use JSON boolean 'false' if ANY applicable dimension above fails.
         IMPORTANT: Booleans MUST be lowercase, JSON formatted: true/false.
+      - "score": A JSON integer from 0 to 4, expressing the SAME judgment as "passed" above with more granularity:
+        4 = fully satisfies the evaluation criteria above, no issues.
+        3 = mostly satisfies them, with only minor issues.
+        2 = partially satisfies them, with meaningful issues.
+        1 = substantially fails them.
+        0 = completely fails, or contradicts, them.
       - "reason": Detailed explanation grounded in the literal ASSISTANT ANSWER text — re-check the ANSWER before claiming a fact is missing or incorrect. Mention accuracy, identity, and specifically if the confidence flag was used correctly.
     Example JSON structure:
       {
         "passed": true,
+        "score": 4,
         "reason": "The assistant correctly identified the SPA hours and used 'true' for confidence as the data was explicit."
       }
       OR
       {
         "passed": false,
+        "score": 1,
         "reason": "The assistant set confidence to 'false', but the smoking ban is explicitly stated in the context."
       }

@@ -3,6 +3,7 @@ from config import JUDGE_MODEL
 from tests.rag_evaluation.frameworks.helpers import get_all_generation_test_cases_from_file, get_or_generate_response
 from tests.rag_evaluation.frameworks.custom.generation.nondeterministic.conftest import (
     record_custom_generation_result,
+    normalize_judge_score,
 )
 
 pytestmark = pytest.mark.live
@@ -27,6 +28,8 @@ def test_llm_faithfulness(assistant_llm_service, llm_as_a_judge, assistant_respo
        literal fact(s) central to this specific case appear in the answer.
     3. (semantic, via judge) The answer is grounded, on-topic, and phrased
        appropriately — judged against the case's free-text criteria.
+    4. (semantic, graded) The Judge's normalized score meets this case's
+       Golden Dataset min_score, as an additional final check on top of 3.
     """
     assistant_response = get_or_generate_response(assistant_response_cache, assistant_llm_service, test_case)
 
@@ -73,13 +76,22 @@ def test_llm_faithfulness(assistant_llm_service, llm_as_a_judge, assistant_respo
         context=test_case["context"]
     )
 
+    score = normalize_judge_score(judge_verdict["score"])
+    min_score = test_case["evaluation"]["custom"]["min_score"]
+
     record_custom_generation_result(
         recorder=recorder, file_name=SUITE_FILE, test_case=test_case, passed=judge_verdict["passed"] is True,
         assistant_answer=bot_answer, actual_confidence=bot_confidence,
         judge_reason=judge_verdict["reason"], judge_model=JUDGE_MODEL,
+        score=score, threshold=min_score,
     )
     assert judge_verdict["passed"] is True, (
         f"Test '{test_case['name']}' failed.\n"
         f"Reason: {judge_verdict['reason']}\n"
         f"Bot Answered: {bot_answer} (Confidence: {bot_confidence})"
+    )
+
+    assert score >= min_score, (
+        f"Test '{test_case['name']}' scored {score:.2f} (raw {judge_verdict['score']}/4), "
+        f"below minimum {min_score:.2f}.\n"
     )

@@ -12,6 +12,12 @@
         "prohibited_patterns": ["\\d+\\s*(°|degrees)"],
         "reference_answer": "The pool's heating status and exact temperature are not mentioned in the available information.",
         "evaluation": {
+          "custom": {
+            "min_score": 0.75
+          },
+          "ragas": {
+            "min_score": 0.75
+          },
           "deepeval": {
             "min_score": 0.85
           }
@@ -32,6 +38,12 @@
         "prohibited_patterns": ["\\$\\d+"],
         "reference_answer": "The cost of a couples massage is not specified in the available information.",
         "evaluation": {
+          "custom": {
+            "min_score": 0.75
+          },
+          "ragas": {
+            "min_score": 0.75
+          },
           "deepeval": {
             "min_score": 0.85
           }
@@ -52,6 +64,12 @@
         "prohibited_patterns": ["\\d+\\s*(spaces|spots)"],
         "reference_answer": "The number of available parking spaces is not specified in the available information.",
         "evaluation": {
+          "custom": {
+            "min_score": 0.75
+          },
+          "ragas": {
+            "min_score": 0.75
+          },
           "deepeval": {
             "min_score": 0.85
           }
@@ -73,6 +91,12 @@
         "prohibited_patterns": ["\\$(?!30\\b)\\d+"],
         "reference_answer": "A 6 PM late check-out option is not mentioned; only late check-out until 2 PM for $30 is specified.",
         "evaluation": {
+          "custom": {
+            "min_score": 0.75
+          },
+          "ragas": {
+            "min_score": 0.75
+          },
           "deepeval": {
             "min_score": 0.85
           }

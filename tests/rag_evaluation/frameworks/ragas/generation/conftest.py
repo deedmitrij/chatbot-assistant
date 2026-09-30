@@ -1,3 +1,4 @@
+import typing as t
 import pytest
 from ragas.embeddings.huggingface_provider import HuggingFaceEmbeddings
 from config import CHAT_MODEL, JUDGE_MODEL, EMBEDDING_MODEL
@@ -25,7 +26,36 @@ def ragas_embeddings():
     return HuggingFaceEmbeddings(model=EMBEDDING_MODEL, use_api=False)
 
 
-def record_generation_result(*, recorder, case, metric_name, result, assistant_result, embedding_model=None):
+class RubricResult(t.NamedTuple):
+    """Minimal (value, reason) shape so a normalized InstanceSpecificRubrics
+    score can be handed to record_generation_result exactly like a real
+    RAGAS MetricResult, without constructing one."""
+    value: float
+    reason: str
+
+
+def build_instance_rubrics(criteria: str) -> dict:
+    """Builds a 5-level InstanceSpecificRubrics severity rubric for one
+    Golden Dataset case, using its own `criteria` text as the semantic
+    target being graded -- the rubric only defines grade severity."""
+    return {
+        "score1_description": f"Completely fails or contradicts the evaluation criteria: {criteria}",
+        "score2_description": f"Substantially fails to meet the evaluation criteria: {criteria}",
+        "score3_description": f"Partially meets the evaluation criteria, with at least one meaningful issue: {criteria}",
+        "score4_description": f"Mostly meets the evaluation criteria, with only minor issues: {criteria}",
+        "score5_description": f"Fully meets the evaluation criteria, with no issues: {criteria}",
+    }
+
+
+def normalize_rubric_score(raw_value: float) -> float:
+    """Maps InstanceSpecificRubrics' native 1-5 scale to the project's
+    0.0-1.0 reporting scale."""
+    return (raw_value - 1) / 4
+
+
+def record_generation_result(
+    *, recorder, case, metric_name, result, assistant_result, embedding_model=None, metadata=None,
+):
     """Persists one EvaluationResult for an already-computed RAGAS
     MetricResult. Never constructs a metric or calls .score() itself.
 
@@ -60,6 +90,7 @@ def record_generation_result(*, recorder, case, metric_name, result, assistant_r
         threshold=threshold,
         status=status,
         score=score,
+        metadata=metadata or {},
         context=case["context"],
         assistant_answer=assistant_result["answer"],
         reference_answer=case.get("reference_answer"),
