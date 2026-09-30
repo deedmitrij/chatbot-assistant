@@ -12,6 +12,9 @@
         "required_facts": ["10 AM", "6 PM"],
         "reference_answer": "Our rooftop pool is open from 10 AM to 6 PM.",
         "evaluation": {
+          "custom": {
+            "min_score": 0.75
+          },
           "ragas": {
             "min_score": 0.90
           },
@@ -36,6 +39,9 @@
         "required_facts": ["HotelGuest2024"],
         "reference_answer": "The Wi-Fi password is HotelGuest2024.",
         "evaluation": {
+          "custom": {
+            "min_score": 0.75
+          },
           "ragas": {
             "min_score": 0.90
           },
@@ -52,6 +58,9 @@
         "required_facts": ["2 PM"],
         "reference_answer": "Check-in time is 2 PM.",
         "evaluation": {
+          "custom": {
+            "min_score": 0.75
+          },
           "ragas": {
             "min_score": 0.90
           },

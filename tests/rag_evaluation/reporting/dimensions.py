@@ -19,6 +19,9 @@ QUALITY_DIMENSIONS = {
         "answer_relevancy": "relevancy",
         "factual_correctness": "correctness",
         "answer_correctness": "correctness",
+        "hallucination": "hallucination",
+        "negative_constraint": "refusal",
+        "brand_consistency": "persona",
     },
     "custom": {
         "HitRate@1": "ranking",

@@ -14,6 +14,9 @@
         "required_facts": ["Green Garden", "vegan"],
         "reference_answer": "Breakfast is served in the Green Garden restaurant, and yes, vegan options are available upon request.",
         "evaluation": {
+          "custom": {
+            "min_score": 0.75
+          },
           "ragas": {
             "min_score": 0.50
           },
@@ -30,6 +33,9 @@
         "required_facts": ["2nd floor"],
         "reference_answer": "The gym is on the 2nd floor. The available information does not specify a fee for gym access.",
         "evaluation": {
+          "custom": {
+            "min_score": 0.75
+          },
           "ragas": {
             "min_score": 0.75
           },

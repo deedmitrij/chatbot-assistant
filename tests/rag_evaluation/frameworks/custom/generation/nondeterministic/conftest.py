@@ -14,9 +14,15 @@ def llm_as_a_judge():
     wrapper, safe to reuse across every evaluation."""
     return LLMService(role=LLMRole.JUDGE)
 
+def normalize_judge_score(raw_score: int, max_raw: int = 4) -> float:
+    """Converts the Judge's raw 0-4 rubric score to a 0.0-1.0 score for
+    reporting/assertions."""
+    return raw_score / max_raw
+
 def record_custom_generation_result(
     *, recorder, file_name, test_case, passed,
     assistant_answer, actual_confidence, judge_reason=None, judge_model=None, metadata=None,
+    score=None, threshold=None,
 ):
     """Persists the one primary EvaluationResult for an executed Custom
     Generation case.
@@ -29,8 +35,11 @@ def record_custom_generation_result(
     are only set by the caller on the Judge-verdict outcome -- guardrail
     failures never call the Judge.
 
-    Custom's checks are boolean/pass-fail by design, not a numeric metric
-    score, so score is 1.0/0.0 and threshold stays None.
+    `passed` remains Custom's primary pass/fail signal, unchanged. `score`/
+    `threshold` are optional: on the Judge-verdict outcome, callers pass the
+    normalized 0.0-1.0 Judge score and this case's Golden Dataset min_score
+    so they're recorded alongside `passed`; guardrail failures omit them and
+    keep the original 1.0/0.0 placeholder score with no threshold.
     """
     metric_name = file_name.rsplit(".", 1)[0]
     case_id = f"{file_name}::{test_case['name']}"
@@ -43,9 +52,9 @@ def record_custom_generation_result(
         metric=metric_name,
         quality_dimension=get_quality_dimension("custom", metric_name),
         query=test_case["query"],
-        threshold=None,
+        threshold=threshold,
         status=Status.PASS if passed else Status.FAIL,
-        score=1.0 if passed else 0.0,
+        score=score if score is not None else (1.0 if passed else 0.0),
         metadata=metadata or {},
         context=test_case["context"],
         assistant_answer=assistant_answer,

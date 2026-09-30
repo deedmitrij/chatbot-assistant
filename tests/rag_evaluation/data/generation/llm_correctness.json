@@ -14,6 +14,9 @@
         "required_facts": ["$30"],
         "reference_answer": "No, staying until 1 PM is not free. Late check-out until 2 PM is available for a $30 fee.",
         "evaluation": {
+          "custom": {
+            "min_score": 0.75
+          },
           "ragas": {
             "min_score": {
               "factual_correctness": 0.60,
@@ -35,6 +38,9 @@
         "expected_confidence": true,
         "reference_answer": "No, smoking is strictly prohibited in all rooms, including the balcony.",
         "evaluation": {
+          "custom": {
+            "min_score": 0.75
+          },
           "ragas": {
             "min_score": {
               "factual_correctness": 0.30,
@@ -65,6 +71,9 @@
         "required_facts": ["$15", "$40", "shuttle"],
         "reference_answer": "The shuttle is the cheapest option at $15, compared to a taxi at $40.",
         "evaluation": {
+          "custom": {
+            "min_score": 0.75
+          },
           "ragas": {
             "min_score": {
               "factual_correctness": 0.60,
@@ -94,6 +103,9 @@
         "expected_confidence": true,
         "reference_answer": "No, parrots are not allowed; only small dogs and cats under 15 lbs are permitted pets.",
         "evaluation": {
+          "custom": {
+            "min_score": 0.75
+          },
           "ragas": {
             "min_score": {
               "factual_correctness": 0.50,
