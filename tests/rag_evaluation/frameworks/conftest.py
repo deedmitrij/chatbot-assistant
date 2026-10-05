@@ -1,8 +1,8 @@
 import pytest
 from backend.constants import LLMRole
 from backend.services.llm.llm_service import LLMService
-from tests.rag_evaluation.reporting.recorder import Recorder
-from tests.rag_evaluation.reporting.paths import EVENTS_PATH
+from reporting.recorder import Recorder
+from reporting.paths import EVENTS_PATH
 
 
 @pytest.fixture(scope="session")

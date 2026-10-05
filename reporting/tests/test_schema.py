@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from tests.rag_evaluation.reporting.schema import EvaluationResult, Status
+from reporting.schema import EvaluationResult, Status
 
 
 def _minimal_kwargs(**overrides):

@@ -2,10 +2,10 @@ import typing as t
 import pytest
 from ragas.embeddings.huggingface_provider import HuggingFaceEmbeddings
 from config import CHAT_MODEL, JUDGE_MODEL, EMBEDDING_MODEL
-from tests.rag_evaluation.reporting.paths import EVENTS_PATH, LATEST_PATH
-from tests.rag_evaluation.reporting.aggregate import write_latest
-from tests.rag_evaluation.reporting.dimensions import get_quality_dimension
-from tests.rag_evaluation.reporting.schema import Status
+from reporting.paths import EVENTS_PATH, LATEST_PATH
+from reporting.aggregate import write_latest
+from reporting.dimensions import get_quality_dimension
+from reporting.schema import Status
 from tests.rag_evaluation.frameworks.ragas.conftest import resolve_min_score
 
 # Project choice, not a reproduction of RAGAS's benchmark defaults: this is a
