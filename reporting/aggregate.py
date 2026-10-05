@@ -2,7 +2,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from tests.rag_evaluation.reporting.schema import Status
+from reporting.schema import Status
 
 KEY_FIELDS = ("framework", "phase", "case_id", "metric")
 

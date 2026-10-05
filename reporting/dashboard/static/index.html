@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluation Dashboard</title>
+    <link rel="stylesheet" href="/static/dashboard.css">
+</head>
+<body>
+<header class="topbar">
+    <div>
+        <h1>Evaluation Dashboard</h1>
+        <p class="muted" id="source-info">Loading…</p>
+    </div>
+    <label class="scope">
+        Scope
+        <select id="scope">
+            <option value="current">Current runs (latest run per suite)</option>
+            <option value="all">All latest.json entries (includes superseded)</option>
+        </select>
+    </label>
+</header>
+
+<main>
+    <div id="error" class="banner error" hidden></div>
+    <div id="warnings" class="banner warn" hidden></div>
+
+    <section id="content" hidden>
+        <div class="cards" id="cards"></div>
+
+        <section class="panel">
+            <h2>Frameworks</h2>
+            <p class="muted small">Pass rate = PASS / (PASS + FAIL). BASELINE (no threshold), N/A and ERROR have no gate verdict and are excluded from it.</p>
+            <table class="compact" id="framework-table"></table>
+        </section>
+
+        <section class="panel">
+            <h2>Quality dimensions</h2>
+            <p class="muted small">Per framework: gated results and native metric names. Metrics are never averaged across frameworks. Click a cell to filter the table.</p>
+            <div class="scroll-x"><table class="compact matrix" id="dimension-table"></table></div>
+        </section>
+
+        <div class="two-col">
+            <section class="panel">
+                <h2>Aggregate Retrieval metrics</h2>
+                <p class="muted small">Suite-level Custom ranking metrics (not per-query results).</p>
+                <table class="compact" id="aggregate-table"></table>
+            </section>
+            <section class="panel">
+                <h2>Framework disagreements</h2>
+                <p class="muted small">Same case_id + quality dimension, 2+ frameworks with PASS/FAIL verdicts that differ. Exact case_id matching only.</p>
+                <div id="disagreements"></div>
+            </section>
+        </div>
+
+        <section class="panel">
+            <h2>Results <span class="muted small" id="result-count"></span></h2>
+            <div class="filters">
+                <select id="f-framework"><option value="">All frameworks</option></select>
+                <select id="f-phase"><option value="">All phases</option></select>
+                <select id="f-dimension"><option value="">All dimensions</option></select>
+                <select id="f-metric"><option value="">All metrics</option></select>
+                <select id="f-status"><option value="">All statuses</option></select>
+                <input id="f-text" type="search" placeholder="Search case / query">
+                <label class="check"><input id="f-disagree" type="checkbox"> Disagreements only</label>
+                <button id="f-reset" type="button">Reset</button>
+            </div>
+            <div class="scroll-x">
+                <table class="results" id="results-table">
+                    <thead><tr>
+                        <th>Framework</th><th>Phase</th><th>Dimension</th><th>Metric</th><th>Case</th>
+                        <th>Score / threshold</th><th>Status</th><th>Reason</th>
+                    </tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <p class="muted empty" id="no-results" hidden>No results match the current filters.</p>
+        </section>
+    </section>
+
+    <p class="muted empty" id="empty" hidden></p>
+</main>
+
+<dialog id="details">
+    <div class="details-head">
+        <h2 id="details-title"></h2>
+        <button type="button" id="details-close" aria-label="Close">✕</button>
+    </div>
+    <div id="details-body"></div>
+</dialog>
+
+<script src="/static/dashboard.js"></script>
+</body>
+</html>

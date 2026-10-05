@@ -1,6 +1,6 @@
 import pytest
 
-from tests.rag_evaluation.reporting.dimensions import get_quality_dimension
+from reporting.dimensions import get_quality_dimension
 
 
 @pytest.mark.parametrize(

@@ -1,7 +1,7 @@
 import json
 
-from tests.rag_evaluation.reporting.aggregate import aggregate
-from tests.rag_evaluation.reporting.schema import Status
+from reporting.aggregate import aggregate
+from reporting.schema import Status
 
 KEY = dict(framework="ragas", phase="generation", case_id="case-1", metric="faithfulness")
 

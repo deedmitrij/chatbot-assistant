@@ -2,10 +2,10 @@ import pytest
 from config import CHAT_MODEL, JUDGE_MODEL
 from backend.constants import LLMRole
 from backend.services.llm.llm_service import LLMService
-from tests.rag_evaluation.reporting.paths import EVENTS_PATH, LATEST_PATH
-from tests.rag_evaluation.reporting.aggregate import write_latest
-from tests.rag_evaluation.reporting.dimensions import get_quality_dimension
-from tests.rag_evaluation.reporting.schema import Status
+from reporting.paths import EVENTS_PATH, LATEST_PATH
+from reporting.aggregate import write_latest
+from reporting.dimensions import get_quality_dimension
+from reporting.schema import Status
 
 
 @pytest.fixture(scope="session")

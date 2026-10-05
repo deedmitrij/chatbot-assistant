@@ -1,7 +1,7 @@
 import json
 
-from tests.rag_evaluation.reporting.recorder import Recorder
-from tests.rag_evaluation.reporting.schema import Status
+from reporting.recorder import Recorder
+from reporting.schema import Status
 
 
 def _minimal_fields(**overrides):

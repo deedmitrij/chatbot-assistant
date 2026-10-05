@@ -1,0 +1,113 @@
+/* Colors follow the chat frontend's tokens (frontend/style.css). */
+:root {
+    --primary: #2c3e50;
+    --accent: #3498db;
+    --bg: #f4f7f6;
+    --surface: #ffffff;
+    --ink: #1f2933;
+    --muted: #616e7c;
+    --border: #dde3e8;
+    --success: #1e8449;
+    --danger: #c0392b;
+    --neutral: #7b8794;
+    --track: #e4e9ed;
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --primary: #d9e2ec;
+        --accent: #5dade2;
+        --bg: #14181c;
+        --surface: #1d2328;
+        --ink: #e4e7eb;
+        --muted: #9aa5b1;
+        --border: #323b43;
+        --success: #52be80;
+        --danger: #ec7063;
+        --neutral: #9aa5b1;
+        --track: #323b43;
+    }
+}
+
+* { box-sizing: border-box; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--bg); color: var(--ink); font-size: 14px; }
+h1 { margin: 0; font-size: 1.4rem; color: var(--primary); }
+h2 { margin: 0 0 .4rem; font-size: 1.05rem; color: var(--primary); }
+.muted { color: var(--muted); }
+.small { font-size: .82rem; margin: 0 0 .6rem; }
+main { padding: 1rem 16px 3rem; max-width: 1400px; margin: 0 auto; }
+
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
+    padding: 1rem 16px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.topbar p { margin: .2rem 0 0; font-size: .82rem; }
+.scope { display: flex; flex-direction: column; font-size: .78rem; color: var(--muted); gap: 2px; }
+
+select, input, button { font: inherit; padding: 4px 8px; border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); color: var(--ink); }
+button { cursor: pointer; }
+
+.banner { padding: .7rem 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid; }
+.banner.error { border-color: var(--danger); color: var(--danger); background: var(--surface); }
+.banner.warn { border-color: var(--neutral); background: var(--surface); }
+.empty { text-align: center; padding: 2rem; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: .75rem; margin-bottom: 1rem; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: .8rem 1rem; }
+.card .label { font-size: .78rem; color: var(--muted); }
+.card .value { font-size: 1.6rem; font-weight: 600; }
+.card .sub { font-size: .78rem; color: var(--muted); }
+
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; margin-bottom: 1rem; min-width: 0; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+.scroll-x { overflow-x: auto; }
+
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-weight: 600; font-size: .78rem; color: var(--muted); border-bottom: 1px solid var(--border); padding: 6px 8px; white-space: nowrap; }
+td { border-bottom: 1px solid var(--border); padding: 6px 8px; vertical-align: top; }
+table.compact td { font-size: .85rem; }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+.matrix td.cell { cursor: pointer; }
+.matrix td.cell:hover { background: var(--bg); }
+.matrix .metrics { font-size: .75rem; color: var(--muted); }
+
+.results tbody tr { cursor: pointer; }
+.results tbody tr:hover { background: var(--bg); }
+.results td.case { max-width: 260px; }
+.results td.reason { max-width: 320px; color: var(--muted); }
+.clip { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.tag { display: inline-block; font-size: .72rem; padding: 0 6px; border-radius: 4px; border: 1px solid var(--border); color: var(--muted); margin-left: 4px; white-space: nowrap; }
+
+.status { font-weight: 600; white-space: nowrap; }
+.status.PASS { color: var(--success); }
+.status.FAIL { color: var(--danger); }
+.status.other { color: var(--neutral); }
+
+/* Score vs threshold: filled bar = score, tick = threshold. Only drawn when
+   both values are on the 0-1 scale; otherwise numbers only. */
+.score { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bar { position: relative; height: 6px; width: 110px; background: var(--track); border-radius: 3px; margin-top: 4px; }
+.bar .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--neutral); }
+.bar .fill.PASS { background: var(--success); }
+.bar .fill.FAIL { background: var(--danger); }
+.bar .tick { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); }
+.rate { display: flex; align-items: center; gap: 8px; }
+.rate .bar { margin-top: 0; }
+
+.filters { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .75rem; align-items: center; }
+.check { display: flex; align-items: center; gap: 4px; font-size: .85rem; }
+
+.disagreement { border: 1px solid var(--border); border-radius: 8px; padding: .5rem .7rem; margin-bottom: .5rem; cursor: pointer; }
+.disagreement:hover { background: var(--bg); }
+.disagreement .verdicts { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: .25rem; font-size: .85rem; }
+
+dialog { width: min(900px, calc(100vw - 32px)); max-height: 85vh; border: 1px solid var(--border); border-radius: 10px;
+    background: var(--surface); color: var(--ink); padding: 1rem 1.2rem; }
+dialog::backdrop { background: rgba(0, 0, 0, .45); }
+.details-head { display: flex; justify-content: space-between; align-items: start; gap: 1rem; }
+.details-head button { border: none; font-size: 1.1rem; }
+dl { display: grid; grid-template-columns: 170px 1fr; gap: 6px 12px; margin: .5rem 0 0; }
+dt { color: var(--muted); font-size: .82rem; }
+dd { margin: 0; white-space: pre-wrap; word-break: break-word; }
+dd pre { margin: 0; white-space: pre-wrap; font-size: .8rem; background: var(--bg); padding: 6px 8px; border-radius: 6px; }
+@media (max-width: 600px) { dl { grid-template-columns: 1fr; } }

@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-from tests.rag_evaluation.reporting.schema import EvaluationResult
+from reporting.schema import EvaluationResult
 
 
 class Recorder:
