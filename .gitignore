@@ -32,5 +32,8 @@ logs/
 chroma_db/
 
 # Evaluation outputs
-backend/evaluation/results/
-reports/
+reports/*
+!reports/results/
+reports/results/*
+!reports/results/latest.json
+!reports/results/events.jsonl
