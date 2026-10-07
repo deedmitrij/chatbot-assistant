@@ -14,20 +14,21 @@ This is a **RAG chatbot** designed for automated hotel guest support. It utilize
    - [Human-in-the-Loop (HITL)](#4️⃣-human-in-the-loop-hitl)
 2. [Quality Assurance & Testing](#-quality-assurance--testing)
 3. [RAGAS Evaluation](#-ragas-evaluation)
-4. [Tech Stack](#-tech-stack)
-5. [Prerequisites](#-prerequisites)
-6. [Setup Instructions](#%EF%B8%8F-setup-instructions)
+4. [AI Quality Engineering / AI Test Lab](#-ai-quality-engineering--ai-test-lab)
+5. [Tech Stack](#-tech-stack)
+6. [Prerequisites](#-prerequisites)
+7. [Setup Instructions](#%EF%B8%8F-setup-instructions)
    - [Clone the Repository](#1️⃣-clone-the-repository)
    - [Set Up a Virtual Environment](#2️⃣-set-up-a-virtual-environment)
    - [Install Dependencies](#3️⃣-install-dependencies)
    - [Configure Environment Variables](#4️⃣-configure-environment-variables)
    - [Run the Application](#5️⃣-run-the-application)
    - [Running Tests](#6️⃣-running-tests)
-7. [API Setup](#-api-setup)
+8. [API Setup](#-api-setup)
    - [Telegram Bot](#-telegram-bot)
    - [Hugging Face Inference API](#-hugging-face-inference-api)
-8. [How It Works](#-how-it-works)
-9. [License](#%EF%B8%8F-license)
+9. [How It Works](#-how-it-works)
+10. [License](#%EF%B8%8F-license)
 
 ---
 
@@ -81,6 +82,15 @@ The project includes **RAGAS (Retrieval-Augmented Generation Assessment)** evalu
 2. **Answer Relevance**: Evaluates how well the answer addresses the user's specific query without redundant info.
 3. **Context Precision**: Calculates the signal-to-noise ratio in the retrieved chunks (how relevant the top-K results are).
 4. **Context Recall**: Checks if the retrieved context actually contains the ground-truth information needed to answer.
+
+---
+
+## 🧪 AI Quality Engineering / AI Test Lab
+The repository also includes a dedicated **AI Quality Engineering / AI Test Lab** built around a **Custom evaluation framework**, **RAGAS**, and **DeepEval**. It evaluates both **Generation** and **Retrieval** behavior using golden datasets, configured **PASS/FAIL quality gates**, persisted reporting, an evaluation dashboard, and framework disagreement analysis.
+
+- [Testing structure](tests/README.md)
+- [AI Test Lab documentation](tests/rag_evaluation/README.md)
+- [Reporting and Evaluation Dashboard](reporting/README.md)
 
 ---
 
@@ -167,21 +177,6 @@ To run the automated QA suite:
 ```sh
 pytest .\tests\
 ```
-
-**Generating HTML Reports**
-
-Self-contained, portfolio-friendly HTML reports (via [pytest-html](https://pytest-html.readthedocs.io/)) for the Custom Retrieval and Custom Generation evaluation suites, individually or combined:
-```powershell
-# Custom Retrieval only (fast, deterministic — expands all rows so aggregate metrics are visible without clicking)
-pytest tests\rag_evaluation\frameworks\custom\retrieval --html=reports\custom_retrieval.html --self-contained-html -o render_collapsed=""
-
-# Custom Generation only (live, calls the configured Assistant/Judge models — requires a running endpoint, e.g. local Ollama)
-pytest tests\rag_evaluation\frameworks\custom\generation\nondeterministic -m live --html=reports\custom_generation.html --self-contained-html
-
-# Combined Custom AI Evaluation (Retrieval + Generation in one report)
-pytest tests\rag_evaluation\frameworks\custom -m "live or not live" --html=reports\custom_evaluation.html --self-contained-html -o render_collapsed=""
-```
-Reports are written to `reports/` (gitignored) and open directly in a browser — no external assets needed.
 
 ---
 
